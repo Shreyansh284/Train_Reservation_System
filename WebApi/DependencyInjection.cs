@@ -3,7 +3,7 @@ using Core;
 using Infrastructure;
 
 
-namespace RoleBaseAuthUser;
+namespace WebApi;
 
 public static class DependencyInjection
 {

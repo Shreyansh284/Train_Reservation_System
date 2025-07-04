@@ -17,9 +17,8 @@ public class TrainSchedule
     public int StationId { get; set; }
     public Station Station { get; set; } = null!;
 
-    public TimeSpan? ArrivalTime { get; set; }
-    public TimeSpan? DepartureTime { get; set; }
-    public int? DayNumber { get; set; }
+    // public TimeSpan? ArrivalTime { get; set; }
+    // public TimeSpan? DepartureTime { get; set; }
+    // public int? DayNumber { get; set; }
     public int DistanceFromSource { get; set; }
-    public int StationOrder { get; set; }
 }
