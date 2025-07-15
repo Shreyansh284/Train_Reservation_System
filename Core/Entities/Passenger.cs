@@ -25,5 +25,5 @@ public class Passenger
     public int SeatId { get; set; }
     public Seat Seat { get; set; } = null!;
 
-    public BookingStatus Status { get; set; }
+    public BookingStatus Status { get; set; } = BookingStatus.Waiting;
 }

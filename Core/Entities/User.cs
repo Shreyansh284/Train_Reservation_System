@@ -22,7 +22,7 @@ public class User
     public DateTime? DateOfBirth { get; set; }
     public UserRole UserRole { get; set; } = UserRole.Customer;
     public DateTime CreatedAt { get; set; }=DateTime.Now;
-    public bool IsDeleted { get; set; } = false;
+    public bool IsActive { get; set; } = true;
 
     public ICollection<Booking>? Bookings { get; set; }
 }

@@ -6,4 +6,5 @@ public interface IStationRepository
 {
     Task<Station?> GetStationByCodeAsync(string stationCode);
     Task<Station> AddStationAsync(Station station);
+    Task UpdateStationAsync(Station station);
 }

@@ -24,7 +24,7 @@ public class Train
     public Station DestinationStation { get; set; }= null!;
 
     public DateTime CreatedAt { get; set; }
-    public bool IsDeleted { get; set; } = false;
+    public bool IsActive { get; set; } =true;
 
     public ICollection<Coach> Coaches { get; set; }= null!;
     public ICollection<TrainSchedule> Schedules { get; set; }= null!;

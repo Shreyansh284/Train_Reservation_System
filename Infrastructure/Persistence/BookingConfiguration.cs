@@ -7,7 +7,10 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
 {
     public void Configure(EntityTypeBuilder<Booking> builder)
     {
-        builder.HasIndex(b => b.PNR).IsUnique();
+
+        builder.Property(b => b.PNR)
+            .HasColumnType("BIGINT")
+            .HasDefaultValueSql("NEXT VALUE FOR dbo.PNRSequence");
 
         builder.Property(b => b.TotalFare)
             .HasPrecision(18, 2);

@@ -127,6 +127,9 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<int>("TotalSeats")
                         .HasColumnType("int");
 
@@ -229,6 +232,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("CoachId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("SeatNumber")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -297,7 +303,7 @@ namespace Infrastructure.Migrations
                     b.Property<int>("DestinationStationId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<int>("SourceStationId")
@@ -360,9 +366,6 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WaitlistId"));
 
-                    b.Property<DateTime>("AddedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("BookingId")
                         .HasColumnType("int");
 
@@ -376,9 +379,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("PassengerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Position")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -436,7 +436,7 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("Gender")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Mobile")

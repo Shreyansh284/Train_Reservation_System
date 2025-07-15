@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Core.Enums;
 
 namespace Core.Entities;
@@ -8,8 +9,7 @@ public class Booking
     [Key]
     public int BookingId { get; set; }
 
-    [MaxLength(10)]
-    public string PNR { get; set; } = null!;
+    public long PNR { get; set; }
 
     public int UserId { get; set; }
     public User User { get; set; } = null!;

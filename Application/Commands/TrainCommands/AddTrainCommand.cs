@@ -47,8 +47,7 @@ public class AddTrainCommandHandler(
             TrainName = dto.TrainName,
             SourceStation = sourceStation,
             DestinationStation = destinationStation,
-            CreatedAt = DateTime.UtcNow,
-            IsDeleted = false
+            CreatedAt = DateTime.Now,
         };
 
         await trainRepo.AddTrainAsync(train);

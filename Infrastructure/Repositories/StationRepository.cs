@@ -19,4 +19,9 @@ public class StationRepository(AppDbContext context): IStationRepository
          return station;
     }
 
+    public async Task UpdateStationAsync(Station station)
+    {
+         context.Stations.Update(station);
+    }
+
 }

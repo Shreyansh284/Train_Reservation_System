@@ -19,6 +19,9 @@ public class AppDbContext(DbContextOptions<AppDbContext>options):DbContext(optio
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasSequence<long>("PNRSequence", schema: "dbo")
+            .StartsAt(1000000)
+            .IncrementsBy(1);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 }

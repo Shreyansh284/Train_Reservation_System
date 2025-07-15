@@ -1,39 +1,92 @@
 ﻿using Application.Commands.TrainCommands;
 using Application.DTOs.TrainDTOs;
 using Application.Queries.TrainQueries;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]/[action]")]
+[Route("api/")]
 public class TrainController(ISender sender) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("train")]
     public async Task<IActionResult> GetAllTrains()
     {
         var trains = await sender.Send(new GetAllTrainsQuery());
         return Ok(trains);
     }
 
-    [HttpGet("{trainNumber}")]
-    public async Task<IActionResult> GetTrainByNumber(string trainNumber)
+    [HttpGet("train/{trainId}")]
+    public async Task<IActionResult> GetTrainByNumber(int trainId)
     {
-        var train = await sender.Send(new GetTrainByNumberQuery(trainNumber));
+        var train = await sender.Send(new GetTrainByNumberQuery(trainId));
         return Ok(train);
     }
-    [HttpPost]
+    [HttpPost("train")]
     public async Task<IActionResult> AddTrain([FromBody] CreateTrainDTO dto)
     {
         var result = await sender.Send(new AddTrainCommand(dto));
         return Ok(result);
     }
 
-    [HttpDelete("{trainNumber}")]
-    public async Task<IActionResult> DeleteTrain(string trainNumber)
+    [HttpPatch("/train/{trainId}/toggle-status")]
+    public async Task<IActionResult> ToggleStatus(int trainId)
     {
-        await sender.Send(new DeleteTrainCommand(trainNumber));
-        return Ok("Train deleted");
+        var trainStatus=await sender.Send(new ToggleTrainStatusCommand(trainId));
+        if (trainStatus)
+        {
+            return Ok("Train Deactivated");
+        }
+        else
+        {
+            return Ok("Train Activated");
+        }
+    }
+
+    [HttpPatch("/train/{trainId}/")]
+    public async Task<IActionResult> EditTrainDetails(int trainId, [FromBody] EditTrainDetailsDTO editDetails)
+    {
+        // var validator = _validatorFactory.GetValidator<EditTrainDetailsDTO>();
+        // var result = await validator.ValidateAsync(editDetails);
+        // if (!result.IsValid)
+        //     return BadRequest(result.Errors);
+
+        var train = await sender.Send(new EditTrainDetailsCommand(trainId, editDetails));
+        return Ok(train);
+
+    }
+
+    [HttpPatch("train/{trainId}/station/{stationId}")]
+    public async Task<IActionResult> EditTrainStation(int trainId, int stationId, EditTrainStationDTO editTrainStation)
+    {
+        var train = await sender.Send(new EditTrainStationCommand(trainId, stationId, editTrainStation));
+        return Ok(train);
+    }
+
+    [HttpPatch("train/{trainId}/toggleCoach/{coachId}")]
+    public async Task<IActionResult> ToggleTrainCoach(int trainId, int coachId)
+    {
+        var coachStatus=await sender.Send(new ToggleTrainCoachCommand(trainId, coachId));
+        if (coachStatus)
+        {
+            return Ok("Train Coach Activated");
+        }
+        else
+        {
+            return Ok("Train Coach Deactivated");
+        }
+
+    }
+    [HttpGet("searchTrains/")]
+    public async Task<IActionResult> SearchTrain([FromQuery]SearchTrainRequestDTO request)
+    {
+        var trainDetails = await sender.Send(new GetAvailableTrainsForSearchRequestQuery(request));
+        if (trainDetails.Count == 0)
+        {
+            return Ok("Trains not found");
+        }
+        return NotFound(trainDetails);
     }
 }

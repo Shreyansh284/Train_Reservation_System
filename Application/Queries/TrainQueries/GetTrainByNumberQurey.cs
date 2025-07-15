@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Queries.TrainQueries;
 
-public record GetTrainByNumberQuery(string TrainNumber) : IRequest<DisplayTrainDTO>;
+public record GetTrainByNumberQuery(int trainId) : IRequest<DisplayTrainDTO>;
 public class GetTrainByNumberQueryHandler(
     ITrainRepository trainRepo,
     IMapper mapper
@@ -14,10 +14,10 @@ public class GetTrainByNumberQueryHandler(
 {
     public async Task<DisplayTrainDTO> Handle(GetTrainByNumberQuery request, CancellationToken cancellationToken)
     {
-        var train = await trainRepo.GetTrainByNumberAsync(request.TrainNumber);
+        var train = await trainRepo.GetTrainByIdAsync(request.trainId);
 
         if (train == null)
-            throw new NotFoundException($"Train with Train Number '{request.TrainNumber}' was not found.");
+            throw new NotFoundException($"Train not found.");
 
         return mapper.Map<DisplayTrainDTO>(train);
     }

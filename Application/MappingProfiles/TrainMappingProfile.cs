@@ -14,5 +14,6 @@ public class TrainMappingProfiles : Profile
         CreateMap<CreateTrainDTO, Train>();
 
         CreateMap<Train, DisplayTrainDTO>();
+        CreateMap<Train, TrainAvailabilityDTO>().ForMember(dest => dest.Coaches, opt => opt.Ignore());
     }
 }

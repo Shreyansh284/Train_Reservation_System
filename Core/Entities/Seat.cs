@@ -14,5 +14,6 @@ public class Seat
 
     [MaxLength(10)]
     public string SeatNumber { get; set; } = null!;
-    // public SeatType SeatType { get; set; }
+
+    public bool IsActive { get; set; } = true;
 }

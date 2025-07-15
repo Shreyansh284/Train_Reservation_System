@@ -2,7 +2,7 @@
 
 public enum CoachClass
 {
-    SL,
+    SL=1,
     _3A,
     _2A,
     _1A,

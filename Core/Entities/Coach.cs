@@ -16,6 +16,7 @@ public class Coach
     public string CoachNumber { get; set; } = null!;
     public CoachClass CoachClass { get; set; }
     public int TotalSeats { get; set; }
+    public bool IsActive{get; set; }=true;
 
     public ICollection<Seat> Seats { get; set; } = null!;
 }
