@@ -1,0 +1,92 @@
+# TODO: API Endpoints & Improvements
+
+## Suggested New Endpoints
+
+### User
+- [ ] POST /api/login — User login endpoint
+- [ ] GET /api/users — List all users (admin only)
+- [ ] GET /api/user/{id} — Get user details
+- [ ] PATCH /api/user/{id} — Update user profile
+- [ ] DELETE /api/user/{id} — Delete user (admin only)
+
+### Train
+- [ ] DELETE /api/train/{trainId} — Delete a train
+- [ ] POST /api/train/{trainId}/station — Add station to train
+- [ ] DELETE /api/train/{trainId}/station/{stationId} — Remove station from train
+- [ ] POST /api/train/{trainId}/coach — Add coach to train
+- [ ] DELETE /api/train/{trainId}/coach/{coachId} — Remove coach from train
+- [ ] GET /api/train/{trainId}/schedule — Get train schedule
+- [ ] POST /api/train/{trainId}/schedule — Add schedule to train
+- [ ] PATCH /api/train/{trainId}/schedule/{scheduleId} — Edit train schedule
+- [ ] DELETE /api/train/{trainId}/schedule/{scheduleId} — Remove train schedule
+
+### Booking
+- [ ] DELETE /api/booking/{pnr} — Cancel a booking (alternative to /cancel-booking)
+- [ ] GET /api/booking/user/{userId} — Get all bookings for a user
+- [ ] GET /api/booking/train/{trainId} — Get all bookings for a train
+
+### Cancellation
+- [ ] GET /api/cancellations — List all cancellations (admin only)
+- [ ] GET /api/cancellation/{id} — Get cancellation details
+
+### Station (CRUD)
+- [ ] POST /api/station — Create a new station
+- [ ] GET /api/stations — List all stations
+- [ ] GET /api/station/{id} — Get details of a specific station
+- [ ] PATCH /api/station/{id} — Update station details
+- [ ] DELETE /api/station/{id} — Delete a station
+
+## Improvements for Current Endpoints
+
+- [ ] Use consistent route naming (e.g., /api/train vs /api/trains, /api/booking vs /api/bookings)
+- [ ] Add [FromBody] to all POST/PATCH methods for clarity
+- [ ] Add proper HTTP status codes (e.g., 201 Created for POST, 204 No Content for DELETE)
+- [ ] Add authentication/authorization (e.g., [Authorize] attribute)
+- [ ] Add input validation and error handling (return validation errors)
+- [ ] Add pagination for list endpoints (e.g., /api/bookings, /api/trains)
+- [ ] Add filtering and sorting for list endpoints
+- [ ] Return more informative error messages (not just "not found")
+- [ ] Add OpenAPI/Swagger documentation for all endpoints 
+
+# Extra Features (Suggestions)
+
+## User Features
+- [ ] Password Reset & Email Verification
+- [ ] User Profile Management (update info, view booking history)
+- [ ] Notifications (Email/SMS for booking, cancellation, schedule changes)
+- [ ] Loyalty/Reward Points system
+
+## Booking Enhancements
+- [ ] Seat Selection during booking
+- [ ] Waitlist Management with notifications
+- [ ] Booking Modification (change date, seat, etc.)
+- [ ] Group Booking support
+
+## Train & Schedule Management
+- [ ] Live Train Status (real-time updates)
+- [ ] Dynamic Pricing based on demand
+- [ ] Coach Layout Visualization
+
+## Admin Features
+- [ ] Admin Dashboard & Analytics (bookings, revenue, occupancy)
+- [ ] Bulk Upload for stations/trains/schedules
+- [ ] Role-Based Access Control for admins
+
+## Payment & Refunds
+- [ ] Online Payment Integration (Stripe, PayPal, etc.)
+- [ ] Automated Refunds for cancellations
+
+## Search & Discovery
+- [ ] Advanced Search (by class, amenities, etc.)
+- [ ] Fare Calculator and class comparison
+
+## Accessibility & Internationalization
+- [ ] Multi-language Support
+- [ ] Accessibility Features (high-contrast, screen reader, etc.)
+
+## Security
+- [ ] Two-Factor Authentication (2FA)
+- [ ] Audit Logs for critical actions
+
+## Mobile Support
+- [ ] Mobile App or Progressive Web App (PWA) 

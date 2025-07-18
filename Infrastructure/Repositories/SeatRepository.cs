@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Enums;
 using Core.Interfaces;
 using Infrastructure.Data;
@@ -32,65 +31,73 @@ public class SeatRepository(AppDbContext context):ISeatRepository
     //
     //     return availableSeats;
     // }
-    public async Task<List<Seat>> GetAvailableSeatsAsync(
-        int coachId,
-        DateTime journeyDate,
-        int fromStationId,
-        int toStationId)
+public async Task<List<Seat>> GetAvailableSeatsAsync(
+    int coachId,
+    DateTime journeyDate,
+    int fromStationId,
+    int toStationId)
+{
+    // 1. Get station distances (once)
+    var trainStationDistances = await context.TrainSchedules
+        .Where(ts => ts.Train.Coaches.Any(c => c.CoachId == coachId))
+        .ToListAsync();
+
+    var fromStation = trainStationDistances.FirstOrDefault(s => s.StationId == fromStationId);
+    var toStation = trainStationDistances.FirstOrDefault(s => s.StationId == toStationId);
+
+    if (fromStation == null || toStation == null)
+        throw new Exception("Invalid station(s)");
+
+    double requestedFrom = fromStation.DistanceFromSource;
+    double requestedTo = toStation.DistanceFromSource;
+
+    if (requestedFrom >= requestedTo)
+        throw new ArgumentException("Invalid segment: fromStation must be before toStation");
+
+    // 2. Get all seats in this coach
+    var allSeats = await context.Seats
+        .Where(s => s.CoachId == coachId)
+        .ToListAsync();
+
+    var availableSeats = new List<Seat>();
+
+    foreach (var seat in allSeats)
     {
-        // Get distance for from/to stations
-        var trainStationDistances = await context.TrainSchedules
-            .Where(ts => ts.Train.Coaches.Any(c => c.CoachId == coachId))
-            .ToDictionaryAsync(ts => ts.StationId, ts => ts.DistanceFromSource);
-
-        double requestedFromDistance = trainStationDistances[fromStationId];
-        double requestedToDistance = trainStationDistances[toStationId];
-
-        // Ensure correct direction
-        if (requestedFromDistance >= requestedToDistance)
-            throw new ArgumentException("Invalid station order: fromStation must be before toStation");
-
-        // Get all seats in the coach
-        var allSeats = await context.Seats
-            .Where(s => s.CoachId == coachId)
+        // 3. Find all passengers on this seat and date, whose bookings are active
+        var passengerBookings = await context.Passengers
+            .Include(p => p.Booking)
+            .Where(p =>
+                p.SeatId == seat.SeatId &&
+                p.Booking.JourneyDate.Date == journeyDate.Date &&
+                p.Booking.BookingStatus != BookingStatus.Cancelled)
+            .Select(p => new
+            {
+                p.Booking.FromStationId,
+                p.Booking.ToStationId
+            })
             .ToListAsync();
 
-        var availableSeats = new List<Seat>();
+        // 4. Assume seat is free unless proven overlapping
+        bool isAvailable = true;
 
-        foreach (var seat in allSeats)
+        foreach (var b in passengerBookings)
         {
-            var bookings = await context.Passengers
-                .Where(p => p.SeatId == seat.SeatId &&
-                            p.Booking.JourneyDate.Date == journeyDate.Date &&
-                            p.Booking.BookingStatus != BookingStatus.Cancelled)
-                .Select(p => new
-                {
-                    p.Booking.FromStationId,
-                    p.Booking.ToStationId
-                })
-                .ToListAsync();
+            var bookedFrom = trainStationDistances.First(s => s.StationId == b.FromStationId).DistanceFromSource;
+            var bookedTo = trainStationDistances.First(s => s.StationId == b.ToStationId).DistanceFromSource;
 
-            bool isAvailable = true;
-
-            foreach (var b in bookings)
+            // 🛠️ FIXED OVERLAP CHECK: Edge-touch is allowed
+            if (!(requestedFrom >= bookedTo || requestedTo <= bookedFrom))
             {
-                double bookedFrom = trainStationDistances[b.FromStationId];
-                double bookedTo = trainStationDistances[b.ToStationId];
-
-                // Overlap logic using distances
-                if (!(requestedToDistance <= bookedFrom || requestedFromDistance >= bookedTo))
-                {
-                    isAvailable = false;
-                    break;
-                }
+                isAvailable = false;
+                break;
             }
-
-            if (isAvailable)
-                availableSeats.Add(seat);
         }
 
-        return availableSeats;
+        if (isAvailable)
+            availableSeats.Add(seat);
     }
 
+    return availableSeats;
+}
 
 }

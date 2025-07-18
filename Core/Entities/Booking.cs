@@ -25,10 +25,10 @@ public class Booking
     public int ToStationId { get; set; }
     public Station ToStation { get; set; } = null!;
 
-    public decimal TotalFare { get; set; } = 0;
+    public decimal TotalFare { get; set; }
     public BookingStatus BookingStatus { get; set; } = BookingStatus.RAC;
     public DateTime BookedOn { get; set; } = DateTime.Now;
 
     public ICollection<Passenger> Passengers { get; set; } =null!;
-    public Cancellation? Cancellation { get; set; }
+    public ICollection<Cancellation>? Cancellations { get; set; }
 }

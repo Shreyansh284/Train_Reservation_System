@@ -34,11 +34,13 @@ public class AddTrainCommandHandler(
         var firstStation = dto.Stations[0].Station;
         var sourceStation = await stationRepo.GetStationByCodeAsync(firstStation.StationCode)
                             ?? await stationRepo.AddStationAsync(mapper.Map<Station>(firstStation));
+        await unitOfWork.SaveChangesAsync();
 
         // Destination Station
         var lastStation = dto.Stations[^1].Station;
         var destinationStation = await stationRepo.GetStationByCodeAsync(lastStation.StationCode)
                                 ?? await stationRepo.AddStationAsync(mapper.Map<Station>(lastStation));
+        await unitOfWork.SaveChangesAsync();
 
         // Create Train
         var train = new Train
@@ -74,6 +76,7 @@ public class AddTrainCommandHandler(
         {
             var station = await stationRepo.GetStationByCodeAsync(scheduleDto.Station.StationCode)
                          ?? await stationRepo.AddStationAsync(mapper.Map<Station>(scheduleDto.Station));
+            await unitOfWork.SaveChangesAsync();
 
             var schedule = new TrainSchedule
             {

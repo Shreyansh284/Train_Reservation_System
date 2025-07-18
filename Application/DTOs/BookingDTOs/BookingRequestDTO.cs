@@ -9,5 +9,5 @@ public class BookingRequestDTO
     public DateTime JourneyDate{ get; set; }
     public CoachClass CoachClass{ get; set; }
 
-    public List<PassangerInfoDTO> Passangers{ get; set; }
+    public List<GetPassengerInfo> Passangers{ get; set; }
 }

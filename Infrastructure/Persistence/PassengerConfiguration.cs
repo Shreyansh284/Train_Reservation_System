@@ -12,10 +12,6 @@ public class PassengerConfiguration : IEntityTypeConfiguration<Passenger>
             .HasForeignKey(p => p.BookingId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(p => p.Coach)
-            .WithMany()
-            .HasForeignKey(p => p.CoachId)
-            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(p => p.Seat)
             .WithMany()

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250708103924_Updated Fields In Tables")]
-    partial class UpdatedFieldsInTables
+    [Migration("20250716102811_Made SeatId Nullable in passenger")]
+    partial class MadeSeatIdNullableinpassenger
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,9 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.HasSequence("PNRSequence", "dbo")
+                .StartsAt(1000000L);
 
             modelBuilder.Entity("Core.Entities.Booking", b =>
                 {
@@ -45,10 +48,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("JourneyDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PNR")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<long>("PNR")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("BIGINT")
+                        .HasDefaultValueSql("NEXT VALUE FOR dbo.PNRSequence");
 
                     b.Property<int>("ToStationId")
                         .HasColumnType("int");
@@ -66,9 +69,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("BookingId");
 
                     b.HasIndex("FromStationId");
-
-                    b.HasIndex("PNR")
-                        .IsUnique();
 
                     b.HasIndex("ToStationId");
 
@@ -160,10 +160,10 @@ namespace Infrastructure.Migrations
                     b.Property<int>("BookingId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CoachId")
+                    b.Property<int?>("CoachClass")
                         .HasColumnType("int");
 
-                    b.Property<int>("Gender")
+                    b.Property<int?>("Gender")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -171,7 +171,7 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("SeatId")
+                    b.Property<int?>("SeatId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -180,8 +180,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("PassengerId");
 
                     b.HasIndex("BookingId");
-
-                    b.HasIndex("CoachId");
 
                     b.HasIndex("SeatId");
 
@@ -542,21 +540,12 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Entities.Coach", "Coach")
-                        .WithMany()
-                        .HasForeignKey("CoachId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Core.Entities.Seat", "Seat")
                         .WithMany()
                         .HasForeignKey("SeatId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Booking");
-
-                    b.Navigation("Coach");
 
                     b.Navigation("Seat");
                 });

@@ -16,13 +16,12 @@ public class Passenger
     [MaxLength(100)]
     public string Name { get; set; } = null!;
     public int Age { get; set; }
-    public GenderType Gender { get; set; }
+    public GenderType? Gender { get; set; }
 
-    public int CoachId { get; set; }
-    public Coach Coach { get; set; } = null!;
+    public CoachClass? CoachClass { get; set; }
 
     [ForeignKey("SeatId")]
-    public int SeatId { get; set; }
+    public int? SeatId { get; set; }
     public Seat Seat { get; set; } = null!;
 
     public BookingStatus Status { get; set; } = BookingStatus.Waiting;

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250630092833_Updated IsDeteled Filter")]
-    partial class UpdatedIsDeteledFilter
+    [Migration("20250715095544_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,9 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.HasSequence("PNRSequence", "dbo")
+                .StartsAt(1000000L);
 
             modelBuilder.Entity("Core.Entities.Booking", b =>
                 {
@@ -45,10 +48,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("JourneyDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PNR")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<long>("PNR")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("BIGINT")
+                        .HasDefaultValueSql("NEXT VALUE FOR dbo.PNRSequence");
 
                     b.Property<int>("ToStationId")
                         .HasColumnType("int");
@@ -66,9 +69,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("BookingId");
 
                     b.HasIndex("FromStationId");
-
-                    b.HasIndex("PNR")
-                        .IsUnique();
 
                     b.HasIndex("ToStationId");
 
@@ -129,6 +129,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<int>("TotalSeats")
                         .HasColumnType("int");
@@ -232,6 +235,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("CoachId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("SeatNumber")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -300,7 +306,7 @@ namespace Infrastructure.Migrations
                     b.Property<int>("DestinationStationId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<int>("SourceStationId")
@@ -336,22 +342,10 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ScheduleId"));
 
-                    b.Property<TimeSpan?>("ArrivalTime")
-                        .HasColumnType("time");
-
-                    b.Property<int?>("DayNumber")
-                        .HasColumnType("int");
-
-                    b.Property<TimeSpan?>("DepartureTime")
-                        .HasColumnType("time");
-
                     b.Property<int>("DistanceFromSource")
                         .HasColumnType("int");
 
                     b.Property<int>("StationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StationOrder")
                         .HasColumnType("int");
 
                     b.Property<int>("TrainId")
@@ -375,9 +369,6 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WaitlistId"));
 
-                    b.Property<DateTime>("AddedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("BookingId")
                         .HasColumnType("int");
 
@@ -391,9 +382,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("PassengerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Position")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -451,7 +439,7 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("Gender")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Mobile")

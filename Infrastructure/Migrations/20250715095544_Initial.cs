@@ -11,6 +11,14 @@ namespace Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "dbo");
+
+            migrationBuilder.CreateSequence(
+                name: "PNRSequence",
+                schema: "dbo",
+                startValue: 1000000L);
+
             migrationBuilder.CreateTable(
                 name: "Stations",
                 columns: table => new
@@ -43,7 +51,7 @@ namespace Infrastructure.Migrations
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserRole = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -61,7 +69,7 @@ namespace Infrastructure.Migrations
                     SourceStationId = table.Column<int>(type: "int", nullable: false),
                     DestinationStationId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,7 +94,7 @@ namespace Infrastructure.Migrations
                 {
                     BookingId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PNR = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    PNR = table.Column<long>(type: "BIGINT", nullable: false, defaultValueSql: "NEXT VALUE FOR dbo.PNRSequence"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     TrainId = table.Column<int>(type: "int", nullable: false),
                     JourneyDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -134,7 +142,8 @@ namespace Infrastructure.Migrations
                     TrainId = table.Column<int>(type: "int", nullable: false),
                     CoachNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     CoachClass = table.Column<int>(type: "int", nullable: false),
-                    TotalSeats = table.Column<int>(type: "int", nullable: false)
+                    TotalSeats = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -155,11 +164,7 @@ namespace Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TrainId = table.Column<int>(type: "int", nullable: false),
                     StationId = table.Column<int>(type: "int", nullable: false),
-                    ArrivalTime = table.Column<TimeSpan>(type: "time", nullable: true),
-                    DepartureTime = table.Column<TimeSpan>(type: "time", nullable: true),
-                    DayNumber = table.Column<int>(type: "int", nullable: true),
-                    DistanceFromSource = table.Column<int>(type: "int", nullable: false),
-                    StationOrder = table.Column<int>(type: "int", nullable: false)
+                    DistanceFromSource = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -214,7 +219,8 @@ namespace Infrastructure.Migrations
                     SeatId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CoachId = table.Column<int>(type: "int", nullable: false),
-                    SeatNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    SeatNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -301,9 +307,7 @@ namespace Infrastructure.Migrations
                     ToStationId = table.Column<int>(type: "int", nullable: false),
                     PassengerId = table.Column<int>(type: "int", nullable: false),
                     BookingId = table.Column<int>(type: "int", nullable: false),
-                    Position = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    AddedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -344,12 +348,6 @@ namespace Infrastructure.Migrations
                 name: "IX_Bookings_FromStationId",
                 table: "Bookings",
                 column: "FromStationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Bookings_PNR",
-                table: "Bookings",
-                column: "PNR",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_ToStationId",
@@ -526,6 +524,10 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Stations");
+
+            migrationBuilder.DropSequence(
+                name: "PNRSequence",
+                schema: "dbo");
         }
     }
 }

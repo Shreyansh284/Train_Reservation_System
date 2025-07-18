@@ -16,13 +16,16 @@ public class BookingMappingProfile:Profile
             .ForMember(dest => dest.FromStation, opt => opt.MapFrom(src => src.FromStation.StationName))
             .ForMember(dest => dest.ToStation, opt => opt.MapFrom(src => src.ToStation.StationName))
             .ForMember(dest => dest.JourneyDate, opt => opt.MapFrom(src => src.JourneyDate))
+            .ForMember(dest => dest.TotalFare, opt => opt.MapFrom(src => src.TotalFare))
             .ForMember(dest => dest.Passengers, opt => opt.MapFrom(src => src.Passengers));
 
-
-        CreateMap<Passenger, PassengerInfoDTO>()
+        CreateMap<Booking, DisplayAllBookingsDTO>();
+        CreateMap<Passenger, DisplayPassengerInfoDTO>()
             .ForMember(dest => dest.SeatNumber, opt => opt.MapFrom(src => src.Seat.SeatNumber))
             .ForMember(dest => dest.CoachNumber, opt => opt.MapFrom(src => src.Seat.Coach.CoachNumber))
-            .ForMember(dest => dest.CoachType, opt => opt.MapFrom(src => src.Seat.Coach.CoachClass.ToString()));
+            .ForMember(dest => dest.CoachType, opt => opt.MapFrom(src => src.CoachClass.ToString()))
+            .ForMember(dest=>dest.BookingStatus,opt=>opt.MapFrom(src=>src.Status.ToString()));
     }
+
 
 }

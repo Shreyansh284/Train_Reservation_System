@@ -12,8 +12,8 @@ public class CancellationConfiguration : IEntityTypeConfiguration<Cancellation>
             .HasPrecision(18, 2);
 
         builder.HasOne(c => c.Booking)
-            .WithOne(b => b.Cancellation)
-            .HasForeignKey<Cancellation>(c => c.BookingId)
+            .WithMany(b => b.Cancellations)
+            .HasForeignKey(c => c.BookingId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(c => c.CancelledByUser)
