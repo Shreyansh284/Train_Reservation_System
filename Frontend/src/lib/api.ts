@@ -1,5 +1,4 @@
 import axios from "axios";
-import { DateToSystemTimezoneSetter } from "node_modules/date-fns/parse/_lib/Setter";
 
 const API_BASE_URL = "http://localhost:5245/api"; // Change to your backend URL if different
 
@@ -16,14 +15,19 @@ console.log(`${API_BASE_URL}/searchTrains?FromStationId=${fromStationId}&ToStati
  return axios.get(`${API_BASE_URL}/searchTrains`, {
     params: { FromStationId: fromStationId, ToStationId: toStationId, DateOfBooking: date }
   }).then(res => res.data)
-  .catch(err => console.log(err));
+  .catch(err => {
+    // Re-throw to allow UI layers to display error messages
+    throw err.response?.data?.message || err.message || "An error occurred while searching trains";
+  });
 }
 export const getTrainDetailsBySearch=(trainId:Number,fromStationId: number, toStationId: number, date: string)=>
 {
   return axios.get(`${API_BASE_URL}/train/${trainId}/search`,
     {params: { FromStationId: fromStationId, ToStationId: toStationId, DateOfBooking: date }})
-
     .then(res=>res.data)
+    .catch(err => {
+      throw err.response?.data?.message || err.message || "Failed to get train details";
+    });
 }
 // Book a train
 export const bookTrain = (trainId: number, userId: number, booking: any) =>

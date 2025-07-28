@@ -6,10 +6,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
 import Search from "./pages/Search";
+import SearchResults from "./pages/SearchResults";
 import AdminAddTrain from "./pages/AdminAddTrain";
 import BookTrain from "./pages/BookTrain";
 import Confirmation from "./pages/Confirmation";
 import CancelBooking from "./pages/CancelBooking";
+import PNRStatus from "./pages/PNRStatus";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,10 +27,13 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/search/results" element={<SearchResults />} />
             <Route path="/admin/add-train" element={<AdminAddTrain />} />
             <Route path="/book/:trainId" element={<BookTrain />} />
             <Route path="/confirmation" element={<Confirmation />} />
             <Route path="/cancel" element={<CancelBooking />} />
+            <Route path="/pnr" element={<PNRStatus />} />
+            <Route path="/pnr/:pnr" element={<PNRStatus />} />
             <Route path="*" element={<NotFound />} />
 
           </Routes>

@@ -12,13 +12,12 @@ import { cn } from "@/lib/utils";
 import { searchTrains, getStationsByQuery } from "@/lib/api";
 import { ClipLoader } from "react-spinners";
 
+
 const Search = () => {
   const navigate = useNavigate();
   const [fromStation, setFromStation] = useState("");
   const [toStation, setToStation] = useState("");
   const [date, setDate] = useState<Date>();
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [isSearched, setIsSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fromSuggestions, setFromSuggestions] = useState<any[]>([]);
@@ -74,11 +73,14 @@ const Search = () => {
       setLoading(true);
       setError(null);
       try {
-        const results = await searchTrains(fromStationId, toStationId, date.toLocaleDateString("en-CA"));
-        setSearchResults(results);
-        setIsSearched(true);
+        const formattedDate = date.getFullYear() + '-' + 
+          String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+          String(date.getDate()).padStart(2, '0');
+        navigate("/search/results", { state: { fromStationId, toStationId, date: formattedDate, fromStation, toStation } });
+        return;
       } catch (err: any) {
-        setError(err.message || "Failed to fetch trains");
+        const message = typeof err === "string" ? err : (err.response?.data?.message || err.message) ;
+        setError(message || "Failed to fetch trains");
       } finally {
         setLoading(false);
       }
@@ -86,7 +88,10 @@ const Search = () => {
   };
 
   const handleBookTrain = (trainId: number, fromStationId: number, toStationId: number) => {
-    navigate(`/book/${trainId}?fromStationId=${fromStationId}&toStationId=${toStationId}&dateOfBooking=${date?.toLocaleDateString("en-CA")}`);
+    const formattedDate = date ? date.getFullYear() + '-' + 
+      String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+      String(date.getDate()).padStart(2, '0') : '';
+    navigate(`/book/${trainId}?fromStationId=${fromStationId}&toStationId=${toStationId}&dateOfBooking=${formattedDate}`);
   };
 
   const renderSuggestions = (suggestions: any[], setter: Function, setterId: Function) => (
@@ -214,7 +219,13 @@ const Search = () => {
                       mode="single"
                       selected={date}
                       onSelect={setDate}
-                      disabled={(day) => day < new Date()}
+                      disabled={(day) => {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const dayToCheck = new Date(day);
+                        dayToCheck.setHours(0, 0, 0, 0);
+                        return dayToCheck < today;
+                      }}
                       initialFocus
                       className="p-3 pointer-events-auto"
                     />
@@ -249,58 +260,7 @@ const Search = () => {
         {error && <div className="text-red-500 text-center mt-4">{error}</div>}
 
         {/* Search Results */}
-        {isSearched && !loading && (
-          <div className="space-y-4 animate-fadeIn">
-            <h2 className="text-2xl font-bold text-foreground">Available Trains ({searchResults.length})</h2>
-            {Array.isArray(searchResults) && searchResults.length > 0 ? (
-              searchResults.map((train) => (
-                <Card key={train.trainId} className="bg-white shadow-card hover:shadow-elevated transition-all duration-300">
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                      <div className="lg:col-span-1">
-                        <h3 className="text-lg font-semibold text-foreground">{train.trainName}</h3>
-                        <p className="text-sm text-muted-foreground">#{train.trainNumber}</p>
-                      </div>
-
-                      <div className="lg:col-span-1 text-center">
-                        <div className="text-sm text-muted-foreground">{fromStation}</div>
-                        <div className="my-2 border-t border-border"></div>
-                        <div className="text-sm text-muted-foreground">{toStation}</div>
-                      </div>
-
-                      <div className="lg:col-span-1">
-                        <div className="grid grid-cols-1 gap-2">
-                          {train.coaches.map((coach: any, idx: number) => (
-                            <div key={idx} className="flex justify-between items-center p-2 bg-muted rounded">
-                              <span className="font-medium">{coach.coachType}</span>
-                              <div className="text-xs text-muted-foreground">
-                                <Users className="inline h-3 w-3 mr-1" />
-                                {coach.availableSeats}/{coach.totalSeats}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="lg:col-span-1 flex items-center justify-center">
-                        <Button
-                          onClick={() => handleBookTrain(train.trainId, fromStationId!, toStationId!)}
-                          variant="railway"
-                          size="lg"
-                          className="w-full"
-                        >
-                          Book Now
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div>No trains found or invalid response from server.</div>
-            )}
-          </div>
-        )}
+        
       </div>
     </div>
   );
