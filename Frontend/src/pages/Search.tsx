@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
+import debounce from "lodash.debounce";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,45 +28,51 @@ const Search = () => {
   const [fromLoading, setFromLoading] = useState(false);
   const [toLoading, setToLoading] = useState(false);
 
-  let fromTimeout: NodeJS.Timeout;
-  let toTimeout: NodeJS.Timeout;
 
-  const handleFromInput = (value: string) => {
-    setFromStation(value);
-    setFromStationId(null);
-    setFromSuggestions([]);
-    if (fromTimeout) clearTimeout(fromTimeout);
-    if (value.length < 2) return;
-    setFromLoading(true);
-    fromTimeout = setTimeout(async () => {
+
+  // debounced fetch functions
+  const debouncedFetchFrom = useRef(
+    debounce(async (query: string) => {
+      setFromLoading(true);
       try {
-        const stations = await getStationsByQuery(value);
+        const stations = await getStationsByQuery(query);
         setFromSuggestions(stations);
       } catch {
         setFromSuggestions([]);
       } finally {
         setFromLoading(false);
       }
-    }, 300);
-  };
+    }, 1000)
+  ).current;
 
-  const handleToInput = (value: string) => {
-    setToStation(value);
-    setToStationId(null);
-    setToSuggestions([]);
-    if (toTimeout) clearTimeout(toTimeout);
-    if (value.length < 2) return;
-    setToLoading(true);
-    toTimeout = setTimeout(async () => {
+  const debouncedFetchTo = useRef(
+    debounce(async (query: string) => {
+      setToLoading(true);
       try {
-        const stations = await getStationsByQuery(value);
+        const stations = await getStationsByQuery(query);
         setToSuggestions(stations);
       } catch {
         setToSuggestions([]);
       } finally {
         setToLoading(false);
       }
-    }, 300);
+    }, 1000)
+  ).current;
+
+  const handleFromInput = (value: string) => {
+    setFromStation(value);
+    setFromStationId(null);
+    setFromSuggestions([]);
+    if (value.length < 2) return;
+    debouncedFetchFrom(value);
+  };
+
+  const handleToInput = (value: string) => {
+    setToStation(value);
+    setToStationId(null);
+    setToSuggestions([]);
+    if (value.length < 2) return;
+    debouncedFetchTo(value);
   };
 
   const handleSearch = async () => {

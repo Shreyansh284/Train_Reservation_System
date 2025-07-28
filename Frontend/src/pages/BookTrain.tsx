@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,9 +31,24 @@ const BookTrain = () => {
   const [passengers, setPassengers] = useState<Passenger[]>([
     { id: "1", name: "", age: "", gender: "male" }
   ]);
+  const MAX_PASSENGERS = 4;
   const [trainData, setTrainData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // indices of requested segment in the schedule list
+  const sourceIndex = useMemo(() => {
+    if (!trainData?.schedules) return -1;
+    return trainData.schedules.findIndex((s: any) => s.station.stationId === trainData?.requestedSourceStation?.stationId);
+  }, [trainData]);
+
+  const destIndex = useMemo(() => {
+    if (!trainData?.schedules) return -1;
+    return trainData.schedules.findIndex((s: any) => s.station.stationId === trainData?.requestedDestinationStation?.stationId);
+  }, [trainData]);
+
+  const lowerBoundIdx = Math.min(sourceIndex, destIndex);
+  const upperBoundIdx = Math.max(sourceIndex, destIndex);
 
   useEffect(() => {
 
@@ -50,6 +65,14 @@ const BookTrain = () => {
   }, [trainId]);
   // console.log(trainData);
   const addPassenger = () => {
+    if (passengers.length >= MAX_PASSENGERS) {
+      toast({
+        title: "Limit reached",
+        description: `You can book a maximum of ${MAX_PASSENGERS} passengers at a time.`,
+        variant: "destructive"
+      });
+      return;
+    }
     setPassengers([...passengers, {
       id: (passengers.length + 1).toString(),
       name: "",
@@ -137,9 +160,7 @@ const BookTrain = () => {
           <CardContent>
             <div className="flex items-center justify-center py-4 overflow-x-auto">
               {trainData?.schedules?.map((schedule: any, idx: number) => {
-                const isSource = schedule.station.stationId === trainData?.requestedSourceStation?.stationId;
-                const isDest = schedule.station.stationId === trainData?.requestedDestinationStation?.stationId;
-                const isActive = isSource || isDest;
+                const isActive = idx >= lowerBoundIdx && idx <= upperBoundIdx;
                 return (
                   <div key={schedule.scheduleId} className="flex items-center">
                     {/* Step Circle */}
@@ -215,7 +236,7 @@ const BookTrain = () => {
                   <User className="h-5 w-5 text-primary" />
                   <span>Passenger Details</span>
                 </div>
-                <Button onClick={addPassenger} variant="outline" size="sm">
+                <Button onClick={addPassenger} variant="outline" size="sm" disabled={passengers.length >= MAX_PASSENGERS}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Passenger
                 </Button>
