@@ -201,7 +201,7 @@ const BookTrain = () => {
               <RadioGroup value={selectedCoach} onValueChange={setSelectedCoach}>
                 <div
                   className="space-y-3 max-h-52 overflow-y-auto"
-                  style={{ minHeight: trainData?.coaches?.length > 1 ? "8rem" : "auto" }}
+                  // style={{ minHeight: trainData?.coaches?.length > 1 ? "8rem" : "auto" }}
                 >
                   {trainData?.coaches?.map((coach: any) => (
                     <div key={coach.coachType} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
