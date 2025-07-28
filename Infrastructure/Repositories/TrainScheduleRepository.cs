@@ -22,15 +22,15 @@ public class TrainScheduleRepository(AppDbContext context) : ITrainScheduleRepos
     }
 
 
-        public async Task<int> GetDistanceBetweenStationsAsync(int startStationId, int endStationId)
+        public async Task<int> GetDistanceBetweenStationsAsync(int trainId,int startStationId, int endStationId)
         {
             var start = await context.TrainSchedules
-                .Where(s => s.StationId == startStationId)
+                .Where(s => s.StationId == startStationId && s.TrainId==trainId)
                 .Select(s => s.DistanceFromSource)
                 .FirstOrDefaultAsync();
 
             var end = await context.TrainSchedules
-                .Where(s => s.StationId == endStationId)
+                .Where(s => s.StationId == endStationId && s.TrainId == trainId)
                 .Select(s => s.DistanceFromSource)
                 .FirstOrDefaultAsync();
 

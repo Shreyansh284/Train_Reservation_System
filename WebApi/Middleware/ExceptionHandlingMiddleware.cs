@@ -32,7 +32,7 @@ public class ExceptionHandlingMiddleware
 
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception");
+            _logger.LogError(ex, $"Unhandled exception: {ex.Message}");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             await context.Response.WriteAsJsonAsync(new
             {

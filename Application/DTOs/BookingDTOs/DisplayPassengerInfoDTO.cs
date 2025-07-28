@@ -4,6 +4,7 @@ namespace Application.DTOs.BookingDTOs;
 
 public class DisplayPassengerInfoDTO
 {
+    public int PassengerId {get; set;}
     public string Name { get; set; }
     public int Age { get; set; }
     public GenderType Gender { get; set; }

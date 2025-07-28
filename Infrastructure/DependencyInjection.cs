@@ -1,8 +1,10 @@
 ﻿// using Application.Interfaces;
 
+using Application.Comman.Interfaces;
 using Core.Interfaces;
 using Core.Options;
 using Infrastructure.Data;
+using Infrastructure.Helpers.TrainHelpers;
 using Infrastructure.Repositories;
 // using Infrastructure.Repositories;
 // using Infrastructure.Services;
@@ -18,6 +20,7 @@ public static class DependencyInjection
     {
         services.AddDbContext<AppDbContext>((provider,options) =>
             options.UseSqlServer(provider.GetRequiredService<IOptionsSnapshot<ConnectionString>>().Value.DefaultConnection));
+
         services.AddScoped<ITrainRepository, TrainRepository>();
         services.AddScoped<IStationRepository, StationRepository>();
         services.AddScoped<ICoachRepository, CoachRepository>();
@@ -29,6 +32,8 @@ public static class DependencyInjection
         services.AddScoped<IWaitingRepository, WaitingRepository>();
         services.AddScoped<ICancellationRepository, CancellationRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddScoped<ITrainMappingHelper, TrainMappingHelper>();
 
         return services;
     }

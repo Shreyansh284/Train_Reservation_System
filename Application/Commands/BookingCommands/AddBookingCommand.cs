@@ -24,17 +24,15 @@ public class AddBookingCommandHandler(
         var train = await trainRepository.GetTrainByIdAsync(request.trainId);
 
         var availableSeats = await GetAvailableSeats(train, bookingDetails);
-        var distance = await trainScheduleRepository
-            .GetDistanceBetweenStationsAsync(bookingDetails.FromStationId, bookingDetails.ToStationId);
 
         int confirmedCount = Math.Min(availableSeats.Count, bookingDetails.Passangers.Count);
-        int totalFare = CalucalateFare(bookingDetails.CoachClass, confirmedCount, distance);
 
-        var booking = await CreateBookingAsync(request, bookingDetails, totalFare);
+
+        var booking = await CreateBookingAsync(request, bookingDetails);
 
         await AddPassengersAsync(booking, bookingDetails, availableSeats, confirmedCount);
 
-        await AddToWaitlistAsync(booking, bookingDetails, confirmedCount, train);
+        await AddToWaitlistAsync(booking, bookingDetails);
 
         var completeBooking = await bookingRepository.GetBookingWithDetailsByPNR(booking.PNR);
         return mapper.Map<PassengerBookingInfoDTO>(completeBooking);
@@ -44,7 +42,7 @@ public class AddBookingCommandHandler(
     {
         var availableSeats = new List<Seat>();
 
-        foreach (var coach in train.Coaches.Where(c => c.CoachClass == details.CoachClass))
+        foreach (var coach in train.Coaches.Where(c => c.CoachClass.ToString() == details.CoachClass))
         {
             var coachSeats = await seatRepository.GetAvailableSeatsAsync(
                 coach.CoachId, details.JourneyDate, details.FromStationId, details.ToStationId);
@@ -54,12 +52,7 @@ public class AddBookingCommandHandler(
         return availableSeats;
     }
 
-    private int CalucalateFare(CoachClass coachClass, int seatsToBook, int distance)
-    {
-        return (int)coachClass * distance * seatsToBook;
-    }
-
-    private async Task<Booking> CreateBookingAsync(AddBookingCommand request, BookingRequestDTO details, int fare)
+    private async Task<Booking> CreateBookingAsync(AddBookingCommand request, BookingRequestDTO details)
     {
         var booking = new Booking
         {
@@ -68,7 +61,7 @@ public class AddBookingCommandHandler(
             TrainId = request.trainId,
             UserId = request.userId,
             JourneyDate = details.JourneyDate,
-            TotalFare = fare
+            TotalFare = details.TotalFare
         };
 
         await bookingRepository.AddBooking(booking);
@@ -107,7 +100,7 @@ public class AddBookingCommandHandler(
         await unitOfWork.SaveChangesAsync();
     }
 
-    private async Task AddToWaitlistAsync(Booking booking, BookingRequestDTO details, int confirmedCount, Train train)
+    private async Task AddToWaitlistAsync(Booking booking, BookingRequestDTO details)
     {
         var passengers = await passengerRepository.GetPassengerByBookingIdAsync(booking.BookingId);
         var passengersInWaiting=passengers.Where(p=>p.Status == BookingStatus.Waiting).ToList();
@@ -116,6 +109,7 @@ public class AddBookingCommandHandler(
             return;
         }
 
+        Enum.TryParse(details.CoachClass, true, out CoachClass coachClass);
         foreach (var passenger in passengersInWaiting)
         {
             var waitlist = new TrainWaitlist
@@ -123,7 +117,7 @@ public class AddBookingCommandHandler(
                 BookingId = booking.BookingId,
                 PassengerId = passenger.PassengerId,
                 TrainId = booking.TrainId,
-                CoachClass = details.CoachClass,
+                CoachClass = coachClass,
                 FromStationId = booking.FromStationId,
                 ToStationId = booking.ToStationId,
                 JourneyDate = booking.JourneyDate

@@ -7,7 +7,7 @@ public class SearchTrainRequestDTOValidator:AbstractValidator<SearchTrainRequest
 {
     public SearchTrainRequestDTOValidator()
     {
-        RuleFor(x=>x.DateOfBooking).GreaterThanOrEqualTo(DateTime.Now)
+        RuleFor(x=>DateTime.Parse( x.DateOfBooking)).GreaterThan(DateTime.Now)
             .WithMessage("The date must be today or in the future.");
     }
 }

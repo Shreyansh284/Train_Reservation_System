@@ -65,8 +65,9 @@ public class TrainRepository(AppDbContext context):ITrainRepository
                 t.Schedules
                     .Where(ts => ts.StationId == toStationId)
                     .Select(ts => ts.DistanceFromSource)
-                    .FirstOrDefault())
+                    .FirstOrDefault()).AsNoTracking()
             .ToListAsync();
+
     }
 
     // public async Task<bool> IsTrainNumberExistsAsync(string trainNumber, int excludeTrainId)

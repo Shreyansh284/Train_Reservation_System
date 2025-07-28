@@ -14,6 +14,11 @@ public class TrainMappingProfiles : Profile
         CreateMap<CreateTrainDTO, Train>();
 
         CreateMap<Train, DisplayTrainDTO>();
-        CreateMap<Train, TrainAvailabilityDTO>().ForMember(dest => dest.Coaches, opt => opt.Ignore());
+        CreateMap<Train, TrainAvailabilityDTO>()
+            .ForMember(dest => dest.Coaches, opt => opt.Ignore())
+            .ForMember(dest=>dest.SourceStation,opt=>opt.MapFrom(src=>src.SourceStation))
+            .ForMember(dest=>dest.DestinationStation,opt=>opt.MapFrom(src=>src.DestinationStation))
+            .ForMember(dest => dest.Schedules, opt => opt.MapFrom(src =>
+                src.Schedules.OrderBy(s => s.DistanceFromSource)));
     }
 }

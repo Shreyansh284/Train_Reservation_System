@@ -85,8 +85,15 @@ public class TrainController(ISender sender) : ControllerBase
         var trainDetails = await sender.Send(new GetAvailableTrainsForSearchRequestQuery(request));
         if (trainDetails.Count == 0)
         {
-            return Ok("Trains not found");
+            return NotFound("Trains not found");
         }
-        return NotFound(trainDetails);
+        return Ok(trainDetails);
+    }
+    [HttpGet("train/{trainId}/search")]
+    public async Task<IActionResult> GetTrainDetailBySearchRequest(int trainId,
+        [FromQuery] SearchTrainRequestDTO search)
+    {
+        var trainDetails = await sender.Send(new GetTrainDetailsBySearchRequest(trainId,search));
+        return Ok(trainDetails);
     }
 }

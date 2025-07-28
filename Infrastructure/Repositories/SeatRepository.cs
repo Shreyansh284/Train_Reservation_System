@@ -57,7 +57,7 @@ public async Task<List<Seat>> GetAvailableSeatsAsync(
     // 2. Get all seats in this coach
     var allSeats = await context.Seats
         .Where(s => s.CoachId == coachId)
-        .ToListAsync();
+        .AsNoTracking().ToListAsync();
 
     var availableSeats = new List<Seat>();
 
@@ -75,7 +75,7 @@ public async Task<List<Seat>> GetAvailableSeatsAsync(
                 p.Booking.FromStationId,
                 p.Booking.ToStationId
             })
-            .ToListAsync();
+            .AsNoTracking().ToListAsync();
 
         // 4. Assume seat is free unless proven overlapping
         bool isAvailable = true;

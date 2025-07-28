@@ -3,9 +3,7 @@
 public enum CoachClass
 {
     SL=1,
-    _3A,
-    _2A,
-    _1A,
-    CC,
-    _2S
+    A3= 2,   // 3rd AC
+    A2= 3,   // 2nd AC
+    A1= 4    // 1st AC
 }

@@ -12,7 +12,7 @@ public class CoachMappingProfile : Profile
         CreateMap<CreateCoachDTO, Coach>();
         CreateMap<Coach, DisplayCoachDTO>()
             .ForMember(dest => dest.CoachClass, opt => opt.MapFrom(src => src.CoachClass.ToString()));
-        CreateMap<Coach, CoachAvailabilityDto>()
+        CreateMap<Coach, CoachAvailabilityDTO>()
             .ForMember(dest=>dest.CoachType,opt=>opt.MapFrom(src=>src.CoachClass.ToString()));
     }
 }
