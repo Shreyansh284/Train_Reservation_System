@@ -9,22 +9,20 @@ export const getTrains = () => axios.get(`${API_BASE_URL}/train`).then(res => re
 export const getTrainById = (trainId: number) => axios.get(`${API_BASE_URL}/train/${trainId}`).then(res => res.data);
 
 // Search trains
-export const searchTrains = (fromStationId: number, toStationId: number, date: string) =>
-{
-console.log(`${API_BASE_URL}/searchTrains?FromStationId=${fromStationId}&ToStationId=${toStationId}&DateOfBooking=${date}`)
- return axios.get(`${API_BASE_URL}/searchTrains`, {
+export const searchTrains = (fromStationId: number, toStationId: number, date: string) => {
+  console.log(`${API_BASE_URL}/searchTrains?FromStationId=${fromStationId}&ToStationId=${toStationId}&DateOfBooking=${date}`)
+  return axios.get(`${API_BASE_URL}/searchTrains`, {
     params: { FromStationId: fromStationId, ToStationId: toStationId, DateOfBooking: date }
   }).then(res => res.data)
-  .catch(err => {
-    // Re-throw to allow UI layers to display error messages
-    throw err.response?.data?.message || err.message || "An error occurred while searching trains";
-  });
+    .catch(err => {
+      // Re-throw to allow UI layers to display error messages
+      throw err.response?.data?.message || err.message || "An error occurred while searching trains";
+    });
 }
-export const getTrainDetailsBySearch=(trainId:Number,fromStationId: number, toStationId: number, date: string)=>
-{
+export const getTrainDetailsBySearch = (trainId: Number, fromStationId: number, toStationId: number, date: string) => {
   return axios.get(`${API_BASE_URL}/train/${trainId}/search`,
-    {params: { FromStationId: fromStationId, ToStationId: toStationId, DateOfBooking: date }})
-    .then(res=>res.data)
+    { params: { FromStationId: fromStationId, ToStationId: toStationId, DateOfBooking: date } })
+    .then(res => res.data)
     .catch(err => {
       throw err.response?.data?.message || err.message || "Failed to get train details";
     });
@@ -43,7 +41,22 @@ export const addTrain = (train: any) =>
 
 // Get stations by query (for autocomplete)
 export const getStationsByQuery = (query: string) =>
-  axios.get(`${API_BASE_URL}/station/search`, { params: { query } }).then(res => res.data); 
+  axios.get(`${API_BASE_URL}/station/search`, { params: { query } }).then(res => res.data);
+
+// Register a new user
+export const registerUser = (userData: {
+  fullName: string;
+  email: string;
+  mobile: string;
+  password: string;
+  confirmPassword: string;
+}) => axios.post(`${API_BASE_URL}/register`, userData).then(res => res.data);
+
+// Login user
+export const loginUser = (credentials: {
+  userName: string;
+  password: string;
+}) => axios.post(`${API_BASE_URL}/Auth/login`, credentials).then(res => res.data);
 
 export const cancelBooking = (cancellationRequest: any) =>
   axios.post(`${API_BASE_URL}/cancel-booking`, cancellationRequest).then(res => res.data);
