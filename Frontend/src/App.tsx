@@ -1,74 +1,109 @@
+import { Suspense, lazy } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AdminRoute, ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import Navigation from "./components/Navigation";
-import Index from "./pages/Index";
-import Search from "./pages/Search";
-import SearchResults from "./pages/SearchResults";
-import AdminAddTrain from "./pages/AdminAddTrain";
-import BookTrain from "./pages/BookTrain";
-import Confirmation from "./pages/Confirmation";
-import CancelBooking from "./pages/CancelBooking";
-import PNRStatus from "./pages/PNRStatus";
-import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import { Loader2 } from 'lucide-react';
+import { Loading } from "@/components/ui/loading";
+
+// Lazy load components for better performance
+const Navigation = lazy(() => import("./components/Navigation"));
+const Index = lazy(() => import("./pages/Index"));
+const Search = lazy(() => import("./pages/Search"));
+const SearchResults = lazy(() => import("./pages/SearchResults"));
+const AdminAddTrain = lazy(() => import("./pages/AdminAddTrain"));
+const BookTrain = lazy(() => import("./pages/BookTrain"));
+const Confirmation = lazy(() => import("./pages/Confirmation"));
+const CancelBooking = lazy(() => import("./pages/CancelBooking"));
+const PNRStatus = lazy(() => import("./pages/PNRStatus"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
 
 const queryClient = new QueryClient();
 
 const AppContent = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="container mx-auto px-4 py-8">
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/search/results" element={<SearchResults />} />
-          <Route path="/pnr" element={<PNRStatus />} />
-          <Route path="/pnr/:pnr" element={<PNRStatus />} />
-          
-          {/* Auth routes - only accessible when not authenticated */}
-          <Route path="/login" element={
-            <ProtectedRoute redirectTo="/" onlyUnauthenticated>
-              <Login />
-            </ProtectedRoute>
-          } />
-          <Route path="/register" element={
-            <ProtectedRoute  redirectTo="/" onlyUnauthenticated>
-              <Register />
-            </ProtectedRoute>
-          } />
+    <Suspense fallback={<Loading className="min-h-screen" />}>
+      <div className="min-h-screen bg-background flex flex-col">
+        <Navigation />
+        <main className="flex-1 container mx-auto px-4 py-4 md:py-6">
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Index />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/search/results" element={<SearchResults />} />
+            <Route path="/pnr" element={<PNRStatus />} />
+            <Route path="/pnr/:pnr" element={<PNRStatus />} />
+            
+            {/* Auth routes - only accessible when not authenticated */}
+            <Route path="/login" element={
+              <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                <ProtectedRoute redirectTo="/" onlyUnauthenticated>
+                  <Login />
+                </ProtectedRoute>
+              </Suspense>
+            } />
+            <Route path="/register" element={
+              <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                <ProtectedRoute redirectTo="/" onlyUnauthenticated>
+                  <Register />
+                </ProtectedRoute>
+              </Suspense>
+            } />
 
-          {/* Protected routes - require authentication */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/book/:trainId" element={<BookTrain />} />
-            <Route path="/confirmation" element={<Confirmation />} />
-            <Route path="/cancel" element={<CancelBooking />} />
-          </Route>
+            {/* Protected routes - require authentication */}
+            <Route element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }>
+              <Route path="/book/:trainId" element={
+                <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                  <BookTrain />
+                </Suspense>
+              } />
+              <Route path="/confirmation" element={
+                <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                  <Confirmation />
+                </Suspense>
+              } />
+              <Route path="/cancel" element={
+                <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                  <CancelBooking />
+                </Suspense>
+              } />
+            </Route>
 
-          {/* Admin routes - require admin role */}
-          <Route element={
-            <ProtectedRoute roles={['Admin']}>
-              <AdminRoute />
-            </ProtectedRoute>
-          }>
-            <Route path="/admin/add-train" element={<AdminAddTrain />} />
-          </Route>
+            {/* Admin routes - require admin role */}
+            <Route element={
+              <ProtectedRoute roles={['Admin']}>
+                <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                  <AdminRoute />
+                </Suspense>
+              </ProtectedRoute>
+            }>
+              <Route path="/admin/add-train" element={
+                <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                  <AdminAddTrain />
+                </Suspense>
+              } />
+            </Route>
 
-          {/* 404 - Keep at the bottom */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-      <Toaster />
-      <Sonner />
-    </div>
+            {/* 404 - Keep at the bottom */}
+            <Route path="*" element={
+              <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                <NotFound />
+              </Suspense>
+            } />
+          </Routes>
+        </main>
+        <Toaster />
+        <Sonner />
+      </div>
+    </Suspense>
   );
 };
 

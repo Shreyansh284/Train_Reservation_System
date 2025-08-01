@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useContext } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,9 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
-import { Train, Users, User, Plus, Trash2, CreditCard,Armchair } from "lucide-react";
+import { Train, Users, User, Plus, Trash2, CreditCard, Armchair } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getTrainDetailsBySearch, bookTrain } from "@/lib/api";
+import { AuthContext } from "@/contexts/AuthContext.tsx";
 
 interface Passenger {
   id: string;
@@ -26,6 +27,30 @@ const BookTrain = () => {
   const dateOfBooking = searchParams.get("dateOfBooking")
   const navigate = useNavigate();
   const { toast } = useToast();
+  const authContext = useContext(AuthContext);
+  const { user, isAuthenticated } = authContext;
+
+  // Handle unauthenticated users
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { 
+        replace: true,
+        state: { 
+          from: window.location.pathname + window.location.search 
+        } 
+      });
+      return;
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Show loading state while checking auth
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   const [selectedCoach, setSelectedCoach] = useState("");
   const [passengers, setPassengers] = useState<Passenger[]>([
@@ -116,9 +141,19 @@ const BookTrain = () => {
       });
       return;
     }
-    // TODO: Replace with real userId, fromStationId, toStationId, journeyDate
-    const userId = 1;
+
+    if (!isAuthenticated) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to book a ticket",
+        variant: "destructive"
+      });
+      navigate('/login', { state: { from: window.location.pathname + window.location.search } });
+      return;
+    }
+    console.log("USER FROM AUTH: " + user);
     const bookingRequest = {
+      userId: user.id,
       fromStationId: Number(fromStationId),
       toStationId: Number(toStationId),
       journeyDate: dateOfBooking || new Date().toISOString(),
@@ -134,7 +169,7 @@ const BookTrain = () => {
     try {
       setLoading(true);
 
-      const result = await bookTrain(Number(trainId), userId, bookingRequest);
+      const result = await bookTrain(Number(trainId), user.id, bookingRequest);
       navigate("/confirmation", { state: result });
     } catch (err: any) {
       toast({ title: "Booking failed", description: err.message, variant: "destructive" });
@@ -143,9 +178,41 @@ const BookTrain = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Error loading train details</h2>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!trainData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Train not found</h2>
+          <p className="text-muted-foreground mb-4">The requested train could not be found.</p>
+          <Button onClick={() => navigate('/search')}>Back to Search</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-[calc(100vh-56px)] bg-gradient-to-br from-background to-muted">
+      <div className="container mx-auto px-4 py-6">
         {/* Train Details */}
         <Card className="mb-6 bg-gradient-card shadow-elevated">
           <CardHeader>
@@ -201,7 +268,7 @@ const BookTrain = () => {
               <RadioGroup value={selectedCoach} onValueChange={setSelectedCoach}>
                 <div
                   className="space-y-3 max-h-52 overflow-y-auto"
-                  // style={{ minHeight: trainData?.coaches?.length > 1 ? "8rem" : "auto" }}
+                // style={{ minHeight: trainData?.coaches?.length > 1 ? "8rem" : "auto" }}
                 >
                   {trainData?.coaches?.map((coach: any) => (
                     <div key={coach.coachType} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors">

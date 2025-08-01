@@ -1,4 +1,5 @@
-﻿using Application.DTOs.UserDTOs;
+﻿using Application.DTOs.User;
+using Application.DTOs.UserDTOs;
 using AutoMapper;
 using Core.Entities;
 
@@ -10,5 +11,6 @@ public class UserMappingProfile:Profile
     {
         CreateMap<UserRegisterationDTO, User>();
         CreateMap<User, DisplayUserDTO>();
+        CreateMap<User, UserResponseDto>();
     }
 }

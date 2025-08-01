@@ -1,45 +1,30 @@
-using Application.Common.Interfaces;
 using Application.DTOs.User;
 using AutoMapper;
+using Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-
+using Application.Common.Interfaces;
 namespace Application.Features.User.Queries;
 
-public class GetCurrentUserQuery : IRequest<UserResponseDto> { }
+public record GetCurrentUserQuery : IRequest<UserResponseDto>;
 
-public class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, UserResponseDto>
+public class GetCurrentUserQueryHandler(IUserRepository userRepository, ICurrentUserService currentUserService, IMapper mapper) 
+    : IRequestHandler<GetCurrentUserQuery, UserResponseDto>
 {
-    private readonly IApplicationDbContext _context;
-    private readonly ICurrentUserService _currentUserService;
-    private readonly IMapper _mapper;
-
-    public GetCurrentUserQueryHandler(
-        IApplicationDbContext context,
-        ICurrentUserService currentUserService,
-        IMapper mapper)
-    {
-        _context = context;
-        _currentUserService = currentUserService;
-        _mapper = mapper;
-    }
-
     public async Task<UserResponseDto> Handle(GetCurrentUserQuery request, CancellationToken cancellationToken)
     {
-        if (!_currentUserService.UserId.HasValue)
+        if (!currentUserService.UserId.HasValue)
         {
             throw new UnauthorizedAccessException("User not authenticated");
         }
 
-        var user = await _context.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == _currentUserService.UserId, cancellationToken);
-
+        var user = await userRepository.GetByIdAsync(currentUserService.UserId.Value);
+        
         if (user == null)
         {
             throw new UnauthorizedAccessException("User not found");
         }
 
-        return _mapper.Map<UserResponseDto>(user);
+        return mapper.Map<UserResponseDto>(user);
     }
 }

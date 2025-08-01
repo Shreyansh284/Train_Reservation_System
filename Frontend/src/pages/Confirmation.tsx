@@ -1,12 +1,25 @@
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Train, Users, Calendar, MapPin, Download, Search } from "lucide-react";
+import { CheckCircle, Train, Users, Calendar, MapPin, Download, Search, ArrowLeft } from "lucide-react";
+import { downloadTicketPdf } from "@/utils/ticketPdf";
 
 const Confirmation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const bookingData = location.state;
+
+  const handleDownload = () => {
+    if (bookingData) {
+      downloadTicketPdf(bookingData);
+    }
+  };
+
+  const handleBack = () => {
+    // Clear the booking data from state when going back
+    navigate(-1);
+  };
 
   if (!bookingData) {
     return (
@@ -36,10 +49,17 @@ const Confirmation = () => {
     passengers,
   } = bookingData;
 
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">
       <div className="container mx-auto px-4 py-8">
+        <Button 
+          variant="ghost" 
+          className="mb-4" 
+          onClick={handleBack}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
         {/* Success Header */}
         <Card className="mb-6 bg-gradient-card shadow-elevated">
           <CardContent className="p-6 text-center">
@@ -59,7 +79,11 @@ const Confirmation = () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button variant="outline" className="flex-1 sm:flex-initial">
+              <Button 
+                variant="outline" 
+                className="flex-1 sm:flex-initial"
+                onClick={handleDownload}
+              >
                 <Download className="mr-2 h-4 w-4" />
                 Download Ticket
               </Button>

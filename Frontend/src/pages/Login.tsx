@@ -14,33 +14,27 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get the full path including query parameters from the state or use default
-  const from = (location.state as any)?.from || '/';
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      // Wait for login to complete
       const success = await login(email, password);
-      
       if (success) {
-        // Use a small timeout to ensure React has processed the state updates
-        setTimeout(() => {
-          // Check if we have a token in localStorage as a final verification
-          const hasToken = !!localStorage.getItem('token');
-          console.log('Login successful, has token:', hasToken);
-          
-          // Navigate to the intended URL with query parameters or home
-          const redirectTo = from.startsWith('/') ? from : `/${from}`;
-          console.log('Redirecting to:', redirectTo);
+        // Check for redirect in location state (can be either a string or Location object)
+        const from = location.state?.from;
+        if (typeof from === 'string') {
+          // If it's a string, it already contains the full path with search params
+          navigate(from, { replace: true });
+        } else if (from?.pathname) {
+          // If it's a Location object, combine pathname and search
+          const redirectTo = from.pathname + (from.search || '');
           navigate(redirectTo, { replace: true });
-          
-          // Force a re-render to ensure all components update
-          window.dispatchEvent(new Event('storage'));
-        }, 100);
+        } else {
+          // Default to home if no redirect specified
+          navigate('/', { replace: true });
+        }
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred. Please try again.';

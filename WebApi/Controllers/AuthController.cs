@@ -24,8 +24,8 @@ public class AuthController(IAuthService authService, IMediator mediator) : Cont
         return Ok(new { token });
     }
 
-    [HttpGet("me")]
     [Authorize]
+    [HttpGet("me")]
     public async Task<ActionResult<UserResponseDto>> GetCurrentUser()
     {
         var query = new GetCurrentUserQuery();

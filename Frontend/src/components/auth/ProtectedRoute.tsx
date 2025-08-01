@@ -39,9 +39,22 @@ export const ProtectedRoute = ({
 
   // Handle protected routes
   if (!isAuthenticated) {
-    // Preserve the full path including search (query) parameters
-    const from = location.pathname + location.search;
-    return <Navigate to={redirectTo} state={{ from }} replace />;
+    // Only redirect if we're not already on the login page to prevent loops
+    if (location.pathname !== '/login') {
+      // Preserve the full URL including search parameters
+      const from = location.pathname + location.search;
+      return (
+        <Navigate 
+          to={redirectTo} 
+          state={{ 
+            from: from || '/',
+            search: location.search 
+          }} 
+          replace 
+        />
+      );
+    }
+    return null;
   }
 
   // Check roles if specified

@@ -3,6 +3,7 @@ using Application.DTOs.TrainDTOs;
 using Application.Queries.TrainQueries;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
@@ -12,12 +13,12 @@ namespace WebApi.Controllers;
 public class TrainController(ISender sender) : ControllerBase
 {
     [HttpGet("train")]
+    [Authorize]
     public async Task<IActionResult> GetAllTrains()
     {
         var trains = await sender.Send(new GetAllTrainsQuery());
         return Ok(trains);
     }
-
     [HttpGet("train/{trainId}")]
     public async Task<IActionResult> GetTrainByNumber(int trainId)
     {

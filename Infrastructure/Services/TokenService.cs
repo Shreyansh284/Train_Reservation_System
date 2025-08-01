@@ -12,23 +12,25 @@ public class TokenService(IConfiguration configuration) : ITokenService
 {
     public string GenerateToken(User user)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Token"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+
 
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-            new(JwtRegisteredClaimNames.Email, user.Email),
-            new(ClaimTypes.Role, user.UserRole.ToString())
+            new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Name, user.FullName),
+            new Claim(ClaimTypes.Role, user.UserRole.ToString())
         };
-
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Token"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(
             issuer: configuration["JWT:Issuer"],
             audience: configuration["JWT:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
+            expires: DateTime.Now.AddHours(1),
             signingCredentials: creds);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var writtenToken = new JwtSecurityTokenHandler().WriteToken(token);
+        return writtenToken;
     }
 }
