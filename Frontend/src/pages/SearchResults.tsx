@@ -24,6 +24,7 @@ const SearchResults = () => {
         date,
         fromStation,
         toStation,
+// Default distance if not provided
     } = (state || {}) as LocationState;
 
     const [loading, setLoading] = useState(true);
