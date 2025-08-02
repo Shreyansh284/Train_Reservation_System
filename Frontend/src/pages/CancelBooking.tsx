@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, AlertTriangle, Users, Train, Calendar, RefreshCw,Route,CalendarCheck2 } from "lucide-react";
+import { Search, AlertTriangle, Users, Train, Calendar, RefreshCw, Route, CalendarCheck2 } from "lucide-react";
+import { Loading } from "@/components/ui/loading";
 import { useToast } from "@/hooks/use-toast";
 import { getBooking ,cancelBooking} from "@/lib/api";
 
@@ -132,7 +133,7 @@ const CancelBooking = () => {
           </CardContent>
         </Card>
 
-        {loading && <div>Loading...</div>}
+        {loading && <Loading size={32} className="p-8" />}
         {error && <div className="text-red-500">{error}</div>}
 
         {/* Booking Details */}

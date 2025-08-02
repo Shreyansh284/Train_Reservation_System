@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { loginUser } from '@/lib/api';
+import { Loading } from "@/components/ui/loading";
 
 // ✅ Use environment variable for API base URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5245/api';
@@ -94,7 +95,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return (
         <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated, isLoading }}>
-            {isLoading ? <div>Loading...</div> : children}
+            {isLoading ? (
+                <div className="min-h-screen">
+                    <Loading size={32} className="min-h-screen" />
+                </div>
+            ) : children}
         </AuthContext.Provider>
     );
 };

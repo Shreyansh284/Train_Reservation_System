@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { searchTrains } from "@/lib/api";
-import { ClipLoader } from "react-spinners";
+import { Loading } from "@/components/ui/loading";
 import TrainResults from "@/components/TrainResults";
-import { ArrowRight, Calendar as CalendarIcon, MapPin } from "lucide-react";
+import { ArrowRight, Calendar as CalendarIcon, MapPin, Loader2 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { Button } from "react-day-picker";
 
@@ -51,8 +51,9 @@ const SearchResults = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center my-10">
-                <ClipLoader size={35} color="#2563eb" />
+            <div className="flex flex-col items-center justify-center min-h-[50vh]">
+                <Loading size={48} className="mb-4" />
+                <p className="text-muted-foreground">Searching for trains...</p>
             </div>
         );
     }

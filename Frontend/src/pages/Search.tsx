@@ -8,10 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Search as SearchIcon, CalendarIcon, MapPin, Users } from "lucide-react";
+import { Loading } from "@/components/ui/loading";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { searchTrains, getStationsByQuery } from "@/lib/api";
-import { ClipLoader } from "react-spinners";
+
 
 
 const Search = () => {
@@ -146,7 +147,7 @@ const Search = () => {
                   />
                   {fromLoading && (
                     <div className="absolute top-full mt-1 w-full bg-white text-sm text-muted-foreground px-4 py-2 border rounded shadow z-50">
-                      Loading...
+                      <Loading size={16} className="py-1" />
                     </div>
                   )}
                   {fromSuggestions.length > 0 && (
@@ -185,7 +186,7 @@ const Search = () => {
                   />
                   {toLoading && (
                     <div className="absolute top-full mt-1 w-full bg-white text-sm text-muted-foreground px-4 py-2 border rounded shadow z-50">
-                      Loading...
+                      <Loading size={16} className="py-1" />
                     </div>
                   )}
                   {toSuggestions.length > 0 && (
@@ -248,26 +249,20 @@ const Search = () => {
                   className="w-full"
                   disabled={!fromStationId || !toStationId || !date || loading}
                 >
-                  <SearchIcon className="mr-2 h-4 w-4" />
-                  Search Trains
+                  {loading ? (
+                    <Loading size={16} className="mr-2" />
+                  ) : (
+                    <>
+                      <SearchIcon className="mr-2 h-4 w-4" />
+                      Search Trains
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
           </CardContent>
-        </Card>
-
-        {/* Loader */}
-        {loading && (
-          <div className="flex justify-center items-center my-10">
-            <ClipLoader size={35} color="#2563eb" />
-          </div>
-        )}
-
-        {/* Error */}
-        {error && <div className="text-red-500 text-center mt-4">{error}</div>}
-
         {/* Search Results */}
-        
+        </Card>
       </div>
     </div>
   );
