@@ -1,4 +1,5 @@
-﻿using Application.DTOs.BookingDTOs;
+﻿using Application.Common.Interfaces;
+using Application.DTOs.BookingDTOs;
 using AutoMapper;
 using Core.Entities;
 using Core.Enums;
@@ -12,9 +13,9 @@ public class AddBookingCommandHandler(
     ITrainRepository trainRepository,
     ISeatRepository seatRepository,
     IBookingRepository bookingRepository,
-    ITrainScheduleRepository trainScheduleRepository,
     IPassengerRepository passengerRepository,
     IWaitingRepository waitingRepository,
+    ICurrentUserService currentUserService,
     IMapper mapper,
     IUnitOfWork unitOfWork) : IRequestHandler<AddBookingCommand, PassengerBookingInfoDTO>
 {

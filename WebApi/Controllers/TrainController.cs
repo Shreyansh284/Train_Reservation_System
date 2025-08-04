@@ -13,25 +13,27 @@ namespace WebApi.Controllers;
 public class TrainController(ISender sender) : ControllerBase
 {
     [HttpGet("train")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllTrains()
     {
         var trains = await sender.Send(new GetAllTrainsQuery());
         return Ok(trains);
     }
+    [Authorize(Roles = "Admin")]
     [HttpGet("train/{trainId}")]
     public async Task<IActionResult> GetTrainByNumber(int trainId)
     {
         var train = await sender.Send(new GetTrainByNumberQuery(trainId));
         return Ok(train);
     }
+    [Authorize(Roles = "Admin")]
     [HttpPost("train")]
     public async Task<IActionResult> AddTrain([FromBody] CreateTrainDTO dto)
     {
         var result = await sender.Send(new AddTrainCommand(dto));
         return Ok(result);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPatch("/train/{trainId}/toggle-status")]
     public async Task<IActionResult> ToggleStatus(int trainId)
     {
@@ -45,7 +47,7 @@ public class TrainController(ISender sender) : ControllerBase
             return Ok("Train Activated");
         }
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPatch("/train/{trainId}/")]
     public async Task<IActionResult> EditTrainDetails(int trainId, [FromBody] EditTrainDetailsDTO editDetails)
     {
@@ -58,14 +60,14 @@ public class TrainController(ISender sender) : ControllerBase
         return Ok(train);
 
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPatch("train/{trainId}/station/{stationId}")]
     public async Task<IActionResult> EditTrainStation(int trainId, int stationId, EditTrainStationDTO editTrainStation)
     {
         var train = await sender.Send(new EditTrainStationCommand(trainId, stationId, editTrainStation));
         return Ok(train);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPatch("train/{trainId}/toggleCoach/{coachId}")]
     public async Task<IActionResult> ToggleTrainCoach(int trainId, int coachId)
     {
@@ -80,6 +82,7 @@ public class TrainController(ISender sender) : ControllerBase
         }
 
     }
+
     [HttpGet("searchTrains/")]
     public async Task<IActionResult> SearchTrain([FromQuery]SearchTrainRequestDTO request)
     {
@@ -90,6 +93,7 @@ public class TrainController(ISender sender) : ControllerBase
         }
         return Ok(trainDetails);
     }
+
     [HttpGet("train/{trainId}/search")]
     public async Task<IActionResult> GetTrainDetailBySearchRequest(int trainId,
         [FromQuery] SearchTrainRequestDTO search)

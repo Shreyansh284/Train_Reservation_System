@@ -50,18 +50,23 @@ const PNRStatus = () => {
     try {
       const data = await getBooking(Number(pnrValue));
       setBooking(data);
-    } catch (err: any) {
-      const msg = typeof err === "string" ? err : err.response?.data?.message || err.message;
-      setError(msg || "Failed to fetch booking");
+      // If no booking found, the error will be shown by the apiClient interceptor
+    } catch (error) {
+      // Error is already shown by the apiClient interceptor
+      console.error('Error fetching booking:', error);
+      setBooking(null); // Clear any previous booking data on error
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSearch = () => {
-  if (!pnr.trim()) return;
-  navigate(`/pnr/${pnr.trim()}`);
-};
+  const handleSearch = async () => {
+    const pnrValue = pnr.trim();
+    if (!pnrValue) return;
+    
+    // Instead of navigating, fetch the data directly
+    await fetchBooking(pnrValue);
+  };
 
   const handleDownload = () => {
     if (booking) {
@@ -71,64 +76,56 @@ const PNRStatus = () => {
   }
 
   // ---------------- Render ----------------
-  if (!pnrParam) {
-    // Render PNR input form
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted">
-        <div className="container mx-auto px-4 py-8">
-          <Card className="bg-gradient-card shadow-elevated mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Search className="h-6 w-6 text-primary" />
-                <span>Check PNR Status</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Enter your 7-digit PNR to view ticket details</p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div className="md:col-span-2 space-y-2">
-                  <Label htmlFor="pnr">PNR Number</Label>
-                  <Input
-                    id="pnr"
-                    placeholder="Enter 10-digit PNR number"
-                    value={pnr}
-                    onChange={(e) => setPnr(e.target.value)}
-
-                  />
-                </div>
-                <Button
-                  onClick={handleSearch}
-                  variant="railway"
-                  disabled={pnr.trim().length !== 7}
-                  className="w-full"
-                >
-                  <Search className="mr-2 h-4 w-4" />
-                  Search
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  // When fetching or displaying ticket
+  // Always show the search form, and conditionally show results below it
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
-      <div className="container mx-auto max-w-3xl">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
+      <div className="container mx-auto px-4 py-8">
+        <Card className="bg-gradient-card shadow-elevated mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Search className="h-6 w-6 text-primary" />
+              <span>Check PNR Status</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">Enter your 7-digit PNR to view ticket details</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+              <div className="md:col-span-2 space-y-2">
+                <Label htmlFor="pnr">PNR Number</Label>
+                <Input
+                  id="pnr"
+                  placeholder="Enter 10-digit PNR number"
+                  value={pnr}
+                  onChange={(e) => setPnr(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+              </div>
+              <Button
+                onClick={handleSearch}
+                disabled={loading || !pnr.trim()}
+                className="w-full md:w-auto"
+              >
+                {loading ? 'Searching...' : 'Check Status'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Show loading indicator */}
         {loading && (
-          <div className="flex justify-center mt-20">
-            <ClipLoader size={40} color="#2563eb" />
+          <div className="flex justify-center my-8">
+            <ClipLoader size={40} color="#3B82F6" />
           </div>
         )}
 
+        {/* Show error if any */}
         {error && (
-          <Card className="shadow-card">
+          <Card className="shadow-card mb-6">
             <CardContent className="p-6 text-center text-red-500">{error}</CardContent>
           </Card>
         )}
 
+        {/* Show booking details if available */}
         {booking && (
           <Card className="shadow-card bg-white">
             <CardHeader>
@@ -215,8 +212,9 @@ const PNRStatus = () => {
             </CardContent>
           </Card>
         )}
-      </div>
+      
     </div>
+  </div>
   );
 };
 

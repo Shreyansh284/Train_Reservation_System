@@ -1,4 +1,4 @@
-﻿using Application.Comman.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.DTOs.TrainDTOs;
 using Core.Interfaces;
 using MediatR;

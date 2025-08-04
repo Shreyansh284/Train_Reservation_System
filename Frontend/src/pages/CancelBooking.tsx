@@ -21,14 +21,17 @@ const CancelBooking = () => {
 
   const handleSearch = async () => {
     if (!pnrNumber) return;
+    
     setLoading(true);
     setError(null);
+    setSearchResults(null);
+    
     try {
       const result = await getBooking(pnrNumber);
-      console.log("API result:", result);
       setSearchResults(result);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch booking");
+    } catch (error) {
+      // Error toast will be shown by the apiClient interceptor
+      console.error('Error fetching booking:', error);
       setSearchResults(null);
     } finally {
       setLoading(false);
@@ -62,30 +65,35 @@ const CancelBooking = () => {
       });
       return;
     }
-    const cancellationRequest = {
-      pnr: pnrNumber,
-      passengerIds: selectedPassengers,
-      reason: "User requested cancellation"
-    };
-    const refundAmount = calculateRefund();
-    console.log("Cancellation request:", cancellationRequest);
-    console.log("Refund amount:", refundAmount);
-    try{
-    await cancelBooking(cancellationRequest);
     
-    toast({
-      title: "Cancellation Successful",
-      description: `${selectedPassengers.length} passenger(s) cancelled. Refund of ₹${refundAmount.toFixed(2)} will be processed in 3-5 business days.`,
-      variant: "default"
-    });
-    setPnrNumber(null);
-    setSearchResults(null);
-    setSelectedPassengers([]);
-  }
-  catch (err: any) {
-    console.error("Cancellation error:", err);
-    // Reset form
-  }
+    try {
+      const cancellationRequest = {
+        pnr: pnrNumber,
+        passengerIds: selectedPassengers,
+        reason: "User requested cancellation"
+      };
+      
+      const refundAmount = calculateRefund();
+      
+      // Make the API call
+      await cancelBooking(cancellationRequest);
+      
+      // Show success toast
+      toast({
+        title: "Cancellation Successful",
+        description: `${selectedPassengers.length} passenger(s) cancelled. Refund of ₹${refundAmount.toFixed(2)} will be processed in 3-5 business days.`,
+        variant: "default"
+      });
+      
+      // Reset form
+      setSearchResults(null);
+      setSelectedPassengers([]);
+      setPnrNumber(null);
+      
+    } catch (error) {
+      // Error toast will be shown by the apiClient interceptor
+      console.error("Cancellation error:", error);
+    }
   };
 
   return (

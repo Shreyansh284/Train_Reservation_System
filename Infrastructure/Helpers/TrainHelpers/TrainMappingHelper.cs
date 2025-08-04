@@ -1,4 +1,4 @@
-﻿using Application.Comman.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.DTOs.CoachDTOs;
 using Application.DTOs.StationDTOs;
 using Application.DTOs.TrainDTOs;

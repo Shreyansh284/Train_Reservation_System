@@ -2,6 +2,7 @@
 using Application.DTOs.BookingDTOs;
 using Application.Queries.BookingQueries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
@@ -9,20 +10,21 @@ namespace WebApi.Controllers;
 [Route("api/")]
 public class BookingController(ISender sender):ControllerBase
 {
+    [Authorize(Roles = "Admin")]
     [HttpGet("bookings")]
     public async Task<IActionResult> GetAllBookings()
     {
         var bookings = await sender.Send(new GetAllBookingsQuery());
         return Ok(bookings);
     }
-
+    [Authorize]
     [HttpPost("booking/train/{trainId}/user/{userId}")]
     public async Task<IActionResult> Booking(int trainId, int userId,BookingRequestDTO request)
     {
         var bookingDetails=await sender.Send(new AddBookingCommand(trainId, userId, request));
         return Ok(bookingDetails);
     }
-
+    [Authorize]
     [HttpGet("booking/{pnr}")]
     public async Task<IActionResult> GetBooking(long pnr)
     {

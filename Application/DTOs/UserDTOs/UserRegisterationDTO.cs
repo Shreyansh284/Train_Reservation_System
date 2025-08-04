@@ -7,10 +7,10 @@ public class UserRegisterationDTO
     [MaxLength(200)]
     public string FullName { get; set; } = null!;
 
-    [MaxLength(200)]
+    [MaxLength(200),EmailAddress]
     public string Email { get; set; } = null!;
 
-    [MaxLength(15)]
+    [MaxLength(10),MinLength(10)]
     public string Mobile { get; set; } = null!;
 
     [MaxLength(256)]

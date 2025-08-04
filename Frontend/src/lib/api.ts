@@ -1,47 +1,53 @@
-import axios from "axios";
-
-const API_BASE_URL = "http://localhost:5245/api"; // Change to your backend URL if different
+import apiClient from "./apiClient";
 
 // Get all trains
-export const getTrains = () => axios.get(`${API_BASE_URL}/train`).then(res => res.data);
+export const getTrains = () => apiClient.get("/train").then(res => res.data);
 
 // Get train by ID
-export const getTrainById = (trainId: number) => axios.get(`${API_BASE_URL}/train/${trainId}`).then(res => res.data);
+export const getTrainById = (trainId: number) => 
+  apiClient.get(`/train/${trainId}`).then(res => res.data);
 
 // Search trains
 export const searchTrains = (fromStationId: number, toStationId: number, date: string) => {
-  console.log(`${API_BASE_URL}/searchTrains?FromStationId=${fromStationId}&ToStationId=${toStationId}&DateOfBooking=${date}`)
-  return axios.get(`${API_BASE_URL}/searchTrains`, {
-    params: { FromStationId: fromStationId, ToStationId: toStationId, DateOfBooking: date }
-  }).then(res => res.data)
-    .catch(err => {
-      // Re-throw to allow UI layers to display error messages
-      throw err.response?.data?.message || err.message || "An error occurred while searching trains";
-    });
-}
-export const getTrainDetailsBySearch = (trainId: Number, fromStationId: number, toStationId: number, date: string) => {
-  return axios.get(`${API_BASE_URL}/train/${trainId}/search`,
-    { params: { FromStationId: fromStationId, ToStationId: toStationId, DateOfBooking: date } })
-    .then(res => res.data)
-    .catch(err => {
-      throw err.response?.data?.message || err.message || "Failed to get train details";
-    });
-}
+  return apiClient.get("/searchTrains", {
+    params: { 
+      FromStationId: fromStationId, 
+      ToStationId: toStationId, 
+      DateOfBooking: date 
+    }
+  }).then(res => res.data);
+};
+
+export const getTrainDetailsBySearch = (
+  trainId: number, 
+  fromStationId: number, 
+  toStationId: number, 
+  date: string
+) => {
+  return apiClient.get(`/train/${trainId}/search`, {
+    params: { 
+      FromStationId: fromStationId, 
+      ToStationId: toStationId, 
+      DateOfBooking: date 
+    }
+  }).then(res => res.data);
+};
+
 // Book a train
 export const bookTrain = (trainId: number, userId: number, booking: any) =>
-  axios.post(`${API_BASE_URL}/booking/train/${trainId}/user/${userId}`, booking).then(res => res.data);
+  apiClient.post(`/booking/train/${trainId}/user/${userId}`, booking).then(res => res.data);
 
 // Get booking by PNR
 export const getBooking = (pnr: number) =>
-  axios.get(`${API_BASE_URL}/booking/${pnr}`).then(res => res.data);
+  apiClient.get(`/booking/${pnr}`).then(res => res.data);
 
 // Add a new train (admin)
 export const addTrain = (train: any) =>
-  axios.post(`${API_BASE_URL}/train`, train).then(res => res.data);
+  apiClient.post("/train", train).then(res => res.data);
 
 // Get stations by query (for autocomplete)
 export const getStationsByQuery = (query: string) =>
-  axios.get(`${API_BASE_URL}/station/search`, { params: { query } }).then(res => res.data);
+  apiClient.get("/station/search", { params: { query } }).then(res => res.data);
 
 // Register a new user
 export const registerUser = (userData: {
@@ -50,13 +56,14 @@ export const registerUser = (userData: {
   mobile: string;
   password: string;
   confirmPassword: string;
-}) => axios.post(`${API_BASE_URL}/register`, userData).then(res => res.data);
+}) => apiClient.post("/register", userData).then(res => res.data);
 
 // Login user
 export const loginUser = (credentials: {
   userName: string;
   password: string;
-}) => axios.post(`${API_BASE_URL}/Auth/login`, credentials).then(res => res.data);
+}) => apiClient.post("/Auth/login", credentials).then(res => res.data);
 
+// Cancel booking
 export const cancelBooking = (cancellationRequest: any) =>
-  axios.post(`${API_BASE_URL}/cancel-booking`, cancellationRequest).then(res => res.data);
+  apiClient.post("/cancel-booking", cancellationRequest).then(res => res.data);

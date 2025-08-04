@@ -1,14 +1,14 @@
-using Application.DTOs.User;
 using AutoMapper;
 using Core.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Application.Common.Interfaces;
-namespace Application.Features.User.Queries;
+using Application.DTOs.UserDTOs;
+
+namespace Application.Queries.UserQueries;
 
 public record GetCurrentUserQuery : IRequest<UserResponseDto>;
 
-public class GetCurrentUserQueryHandler(IUserRepository userRepository, ICurrentUserService currentUserService, IMapper mapper) 
+public class GetCurrentUserQueryHandler(IUserRepository userRepository, ICurrentUserService currentUserService, IMapper mapper)
     : IRequestHandler<GetCurrentUserQuery, UserResponseDto>
 {
     public async Task<UserResponseDto> Handle(GetCurrentUserQuery request, CancellationToken cancellationToken)
@@ -19,7 +19,7 @@ public class GetCurrentUserQueryHandler(IUserRepository userRepository, ICurrent
         }
 
         var user = await userRepository.GetByIdAsync(currentUserService.UserId.Value);
-        
+
         if (user == null)
         {
             throw new UnauthorizedAccessException("User not found");

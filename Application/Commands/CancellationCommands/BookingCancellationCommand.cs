@@ -1,4 +1,5 @@
-﻿using Application.DTOs.CancellationDTOs;
+﻿using Application.Common.Interfaces;
+using Application.DTOs.CancellationDTOs;
 using Application.Exceptions;
 using Core.Entities;
 using Core.Enums;
@@ -10,16 +11,27 @@ namespace Application.Commands.CancellationCommands;
 public  record BookingCancellationCommand(CancellationRequestDTO cancellationRequest):IRequest;
 
 public class BookingCancellationCommandHandler(IBookingRepository bookingRepository,IPassengerRepository passengerRepository,
-    ICancellationRepository cancellationRepository,IWaitingRepository waitingRepository,IUnitOfWork unitOfWork) : IRequestHandler<BookingCancellationCommand>
+    ICancellationRepository cancellationRepository,IWaitingRepository waitingRepository,ICurrentUserService currentUserService,IUnitOfWork unitOfWork) : IRequestHandler<BookingCancellationCommand>
 {
     public async Task Handle(BookingCancellationCommand request, CancellationToken cancellationToken)
     {
         var cancellationRequest=request.cancellationRequest;
+
+        if (!currentUserService.UserId.HasValue)
+        {
+            throw new UnauthorizedAccessException("User not authenticated");
+        }
         var booking = await bookingRepository.GetBookingWithDetailsByPNR(cancellationRequest.PNR);
         if (booking == null)
         {
             throw new NotFoundException("InValid PNR");
         }
+        var userId = currentUserService.UserId.Value;
+        if (booking.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("User not authorized");
+        }
+
         var cancelPassengers =  booking.Passengers
             .Where(p => cancellationRequest.PassengerIds.Contains(p.PassengerId) && p.Status != BookingStatus.Cancelled)
             .ToList();

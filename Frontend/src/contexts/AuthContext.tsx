@@ -1,11 +1,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { loginUser } from '@/lib/api';
 import { Loading } from "@/components/ui/loading";
-
-// ✅ Use environment variable for API base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5245/api';
+import apiClient from '@/lib/apiClient';
 
 export type UserRole = 'Admin' | 'Agent' | 'Customer';
 
@@ -35,12 +32,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const fetchUserData = async (token: string) => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/Auth/me`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            console.log(response);
+            const response = await apiClient.get('/Auth/me');
             const userData = response.data;
-            console.log(userData);
             setUser({
                 id: userData.userId,
                 email: userData.email,
@@ -49,6 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             });
         } catch (error) {
             console.error('Failed to fetch user:', error);
+            // The error is already handled by the apiClient interceptor
             localStorage.removeItem('token');
             setUser(null);
             setToken(null);
@@ -68,16 +62,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(true);
         try {
             const response = await loginUser({ userName: email, password });
-            if (!response?.token) throw new Error('No token received');
+            if (!response?.token) {
+                throw new Error('No authentication token received');
+            }
 
             const token = response.token;
             localStorage.setItem('token', token);
             setToken(token);
             await fetchUserData(token);
             return true;
-        } catch (err) {
-            console.error('Login error:', err);
-            throw err;
+        } catch (error) {
+            // Error is already handled by the apiClient interceptor
+            // Just rethrow to allow the calling component to handle it if needed
+            throw error;
         } finally {
             setIsLoading(false);
         }

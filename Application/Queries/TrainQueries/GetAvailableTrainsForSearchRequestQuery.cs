@@ -1,9 +1,5 @@
-﻿using Application.Comman.Interfaces;
-using Application.DTOs.CoachDTOs;
-using Application.DTOs.StationDTOs;
+﻿using Application.Common.Interfaces;
 using Application.DTOs.TrainDTOs;
-using AutoMapper;
-using Core.Entities;
 using Core.Interfaces;
 using MediatR;
 

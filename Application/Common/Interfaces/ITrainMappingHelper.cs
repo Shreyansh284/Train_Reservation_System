@@ -1,7 +1,7 @@
 ﻿using Application.DTOs.TrainDTOs;
 using Core.Entities;
 
-namespace Application.Comman.Interfaces;
+namespace Application.Common.Interfaces;
 
 public interface ITrainMappingHelper
 {

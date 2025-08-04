@@ -1,6 +1,5 @@
 using Application.DTOs.UserDTOs;
-using Application.DTOs.User;
-using Application.Features.User.Queries;
+using Application.Queries.UserQueries;
 using Core.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

@@ -77,21 +77,42 @@ const Search = () => {
   };
 
   const handleSearch = async () => {
-    if (fromStationId && toStationId && date) {
-      setLoading(true);
-      setError(null);
-      try {
-        const formattedDate = date.getFullYear() + '-' + 
-          String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-          String(date.getDate()).padStart(2, '0');
-        navigate("/search/results", { state: { fromStationId, toStationId, date: formattedDate, fromStation, toStation } });
+    if (!fromStationId || !toStationId || !date) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const formattedDate = date.getFullYear() + '-' + 
+        String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+        String(date.getDate()).padStart(2, '0');
+      
+      // First fetch the trains
+      const trains = await searchTrains(fromStationId, toStationId, formattedDate);
+      
+      // If no trains found, show a toast and stay on the page
+      if (!trains || trains.length === 0) {
+        // The error toast will be shown by the apiClient interceptor
         return;
-      } catch (err: any) {
-        const message = typeof err === "string" ? err : (err.response?.data?.message || err.message) ;
-        setError(message || "Failed to fetch trains");
-      } finally {
-        setLoading(false);
       }
+      
+      // Only navigate if we have results
+      navigate("/search/results", { 
+        state: { 
+          fromStationId, 
+          toStationId, 
+          date: formattedDate, 
+          fromStation, 
+          toStation 
+        } 
+      });
+    } catch (error) {
+      // Error toast is handled by the apiClient interceptor
+      console.error('Search error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 

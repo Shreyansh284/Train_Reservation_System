@@ -1,18 +1,12 @@
-// using Application.Interfaces;
-
-using Application.Comman.Interfaces;
 using Core.Interfaces;
 using Core.Options;
 using Infrastructure.Data;
 using Infrastructure.Helpers.TrainHelpers;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
-// using Infrastructure.Repositories;
-// using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Http;
 using Application.Common.Interfaces;
 
 namespace Infrastructure;
@@ -39,7 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<ITrainMappingHelper, TrainMappingHelper>();
-        
+
         // Add HTTP context accessor
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();

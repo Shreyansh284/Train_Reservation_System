@@ -29,7 +29,15 @@ public class ExceptionHandlingMiddleware
                 message = ex.Message
             });
         }
-
+        catch (UnauthorizedAccessException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                status = 403,
+                message = ex.Message
+            });
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Unhandled exception: {ex.Message}");

@@ -82,11 +82,7 @@ const SearchResults = () => {
             </div>
 
             <div className="container mx-auto px-4 pt-6">
-                {error && (
-                    <div className="text-red-500 text-center mb-4 animate-fadeIn">
-                        {error}
-                    </div>
-                )}
+              
                 <TrainResults
                     trains={results}
                     fromStation={fromStation}

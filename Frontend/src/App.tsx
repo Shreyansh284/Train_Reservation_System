@@ -35,8 +35,7 @@ const AppContent = () => {
             <Route path="/" element={<Index />} />
             <Route path="/search" element={<Search />} />
             <Route path="/search/results" element={<SearchResults />} />
-            <Route path="/pnr" element={<PNRStatus />} />
-            <Route path="/pnr/:pnr" element={<PNRStatus />} />
+          
             
             {/* Auth routes - only accessible when not authenticated */}
             <Route path="/login" element={
@@ -70,6 +69,8 @@ const AppContent = () => {
                   <Confirmation />
                 </Suspense>
               } />
+                <Route path="/pnr" element={<PNRStatus />} />
+                <Route path="/pnr/:pnr" element={<PNRStatus />} />
               <Route path="/cancel" element={
                 <Suspense fallback={<Loading className="min-h-[60vh]" />}>
                   <CancelBooking />

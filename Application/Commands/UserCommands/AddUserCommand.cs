@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Application.Commands.UserCommand;
 
-public record AddUserCommand(UserRegisterationDTO userDto) : IRequest<DisplayUserDTO>;
+public record AddUserCommand(UserRegisterationDTO userDto) : IRequest<UserResponseDto>;
 
 public class AddUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork,IMapper mapper)
-    : IRequestHandler<AddUserCommand, DisplayUserDTO>
+    : IRequestHandler<AddUserCommand, UserResponseDto>
 {
-    public async Task<DisplayUserDTO> Handle(AddUserCommand request, CancellationToken cancellationToken)
+    public async Task<UserResponseDto> Handle(AddUserCommand request, CancellationToken cancellationToken)
     {
         var userDetailsDTo=request.userDto;
         var user=mapper.Map<User>(userDetailsDTo);
@@ -21,6 +21,6 @@ public class AddUserCommandHandler(IUserRepository userRepository, IUnitOfWork u
         user.PasswordHash = hashedPassword;
         await userRepository.AddUserAsync(user);
         await unitOfWork.SaveChangesAsync();
-        return mapper.Map<DisplayUserDTO>(user);
+        return mapper.Map<UserResponseDto>(user);
     }
 }

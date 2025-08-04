@@ -55,15 +55,17 @@ const Navigation = () => {
               </Button>
             </Link>
 
-            <Link to="/pnr">
-              <Button
-                variant={isActive("/pnr") ? "railway" : "ghost"}
-                className="flex items-center space-x-2"
-              >
-                <Calendar className="h-4 w-4" />
-                <span>Check PNR</span>
-              </Button>
-            </Link>
+            {isAuthenticated && (
+              <Link to="/pnr">
+                <Button
+                  variant={isActive("/pnr") ? "railway" : "ghost"}
+                  className="flex items-center space-x-2"
+                >
+                  <Calendar className="h-4 w-4" />
+                  <span>PNR Status</span>
+                </Button>
+              </Link>
+            )}
 
             {isAuthenticated && (
               <Link to="/cancel">
@@ -72,7 +74,7 @@ const Navigation = () => {
                   className="flex items-center space-x-2"
                 >
                   <Ticket className="h-4 w-4" />
-                  <span>My Bookings</span>
+                  <span>Cancel Booking</span>
                 </Button>
               </Link>
             )}

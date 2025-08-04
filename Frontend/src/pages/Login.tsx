@@ -8,7 +8,6 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -16,7 +15,6 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
 
     try {
@@ -36,10 +34,10 @@ export default function Login() {
           navigate('/', { replace: true });
         }
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred. Please try again.';
-      setError(errorMessage);
-      console.error('Login error:', err);
+    } catch (error) {
+      // Error is already shown via toast from apiClient
+      // Just log for debugging
+      console.error('Login error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -53,11 +51,7 @@ export default function Login() {
           <p className="text-muted-foreground">Enter your credentials below</p>
         </div>
 
-        {error && (
-          <div className="p-4 text-sm text-red-600 bg-red-50 rounded-md">
-            {error}
-          </div>
-        )}
+        {/* Error messages are now shown via toast notifications */}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
