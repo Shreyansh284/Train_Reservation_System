@@ -6,6 +6,7 @@ import TrainResults from "@/components/TrainResults";
 import { ArrowRight, Calendar as CalendarIcon, MapPin, Loader2 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { Button } from "react-day-picker";
+import { TrainLoader } from "@/components/ui/TrainLoader";
 
 interface LocationState {
     fromStationId: number;
@@ -52,7 +53,7 @@ const SearchResults = () => {
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh]">
-                <Loading size={48} className="mb-4" />
+                <TrainLoader size={48} className="mb-4" />
                 <p className="text-muted-foreground">Searching for trains...</p>
             </div>
         );

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { TrainFront, MapPin, Plus, Trash2, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { addTrain } from "@/lib/api";
+import { TrainLoader } from "@/components/ui/TrainLoader";
 
 const AdminAddTrain = () => {
   const { toast } = useToast();
@@ -422,7 +423,12 @@ const AdminAddTrain = () => {
                 </Button>
               )}
             </div>
-            {loading && <div>Adding train...</div>}
+            {loading && (
+                     <div className="flex flex-col items-center justify-center my-12 space-y-4">
+                       <TrainLoader size={40} />
+                       <p className="text-muted-foreground text-sm">Adding train...</p>
+                     </div>
+                   )}
             {error && <div className="text-red-500">{error}</div>}
           </CardContent>
         </Card>

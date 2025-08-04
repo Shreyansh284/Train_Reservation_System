@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Search, Users, Train, MapPin, Calendar, Download } from "lucide-react";
-import { ClipLoader } from "react-spinners";
+import { TrainLoader } from "@/components/ui/TrainLoader";
 import { downloadTicketPdf } from "@/utils/ticketPdf";
 
 interface Passenger {
@@ -113,8 +113,9 @@ const PNRStatus = () => {
 
         {/* Show loading indicator */}
         {loading && (
-          <div className="flex justify-center my-8">
-            <ClipLoader size={40} color="#3B82F6" />
+          <div className="flex flex-col items-center justify-center my-12 space-y-4">
+            <TrainLoader size={40} />
+            <p className="text-muted-foreground text-sm">Fetching booking details...</p>
           </div>
         )}
 

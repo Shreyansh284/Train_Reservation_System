@@ -9,6 +9,7 @@ import { Search, AlertTriangle, Users, Train, Calendar, RefreshCw, Route, Calend
 import { Loading } from "@/components/ui/loading";
 import { useToast } from "@/hooks/use-toast";
 import { getBooking ,cancelBooking} from "@/lib/api";
+import { TrainLoader } from "@/components/ui/TrainLoader";
 
 const CancelBooking = () => {
   const { toast } = useToast();
@@ -141,7 +142,12 @@ const CancelBooking = () => {
           </CardContent>
         </Card>
 
-        {loading && <Loading size={32} className="p-8" />}
+        {loading && (
+                 <div className="flex flex-col items-center justify-center my-12 space-y-4">
+                   <TrainLoader size={40} />
+                   <p className="text-muted-foreground text-sm">Fetching booking details...</p>
+                 </div>
+               )}
         {error && <div className="text-red-500">{error}</div>}
 
         {/* Booking Details */}
