@@ -9,7 +9,7 @@ using MediatR;
 namespace Application.Commands.BookingCommands;
 
 public record AddBookingCommand(int trainId,int userId,BookingRequestDTO bookingRequest):IRequest<PassengerBookingInfoDTO>;
-public class AddBookingCommandHandler(
+public class AddBookingCommandHandler (
     ITrainRepository trainRepository,
     ISeatRepository seatRepository,
     IBookingRepository bookingRepository,
@@ -19,24 +19,35 @@ public class AddBookingCommandHandler(
     IMapper mapper,
     IUnitOfWork unitOfWork) : IRequestHandler<AddBookingCommand, PassengerBookingInfoDTO>
 {
+    private static readonly SemaphoreSlim _bookingLock = new(1, 1);
+
     public async Task<PassengerBookingInfoDTO> Handle(AddBookingCommand request, CancellationToken cancellationToken)
     {
-        var bookingDetails = request.bookingRequest;
-        var train = await trainRepository.GetTrainByIdAsync(request.trainId);
+        await _bookingLock.WaitAsync(cancellationToken);
+        try
+        {
 
-        var availableSeats = await GetAvailableSeats(train, bookingDetails);
+            var bookingDetails = request.bookingRequest;
+            var train = await trainRepository.GetTrainByIdAsync(request.trainId);
 
-        int confirmedCount = Math.Min(availableSeats.Count, bookingDetails.Passangers.Count);
+            var availableSeats = await GetAvailableSeats(train, bookingDetails);
+
+            int confirmedCount = Math.Min(availableSeats.Count, bookingDetails.Passangers.Count);
 
 
-        var booking = await CreateBookingAsync(request, bookingDetails);
+            var booking = await CreateBookingAsync(request, bookingDetails);
 
-        await AddPassengersAsync(booking, bookingDetails, availableSeats, confirmedCount);
+            await AddPassengersAsync(booking, bookingDetails, availableSeats, confirmedCount);
 
-        await AddToWaitlistAsync(booking, bookingDetails);
+            await AddToWaitlistAsync(booking, bookingDetails);
 
-        var completeBooking = await bookingRepository.GetBookingWithDetailsByPNR(booking.PNR);
-        return mapper.Map<PassengerBookingInfoDTO>(completeBooking);
+            var completeBooking = await bookingRepository.GetBookingWithDetailsByPNR(booking.PNR);
+            return mapper.Map<PassengerBookingInfoDTO>(completeBooking);
+        }
+        finally
+        {
+            _bookingLock.Release();
+        }
     }
 
     private async Task<List<Seat>> GetAvailableSeats(Train train, BookingRequestDTO details)
@@ -87,7 +98,6 @@ public class AddBookingCommandHandler(
             if (i < confirmedCount)
             {
                 passenger.SeatId = i<seats.Count ? seats[i].SeatId:null;
-                // passenger.CoachId = seats[i].CoachId;
                 passenger.Status = BookingStatus.Confirmed;
             }
             else

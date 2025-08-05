@@ -13,8 +13,13 @@ public  record BookingCancellationCommand(CancellationRequestDTO cancellationReq
 public class BookingCancellationCommandHandler(IBookingRepository bookingRepository,IPassengerRepository passengerRepository,
     ICancellationRepository cancellationRepository,IWaitingRepository waitingRepository,ICurrentUserService currentUserService,IUnitOfWork unitOfWork) : IRequestHandler<BookingCancellationCommand>
 {
+    private static readonly SemaphoreSlim _bookingLock = new(1, 1);
+
     public async Task Handle(BookingCancellationCommand request, CancellationToken cancellationToken)
     {
+        await _bookingLock.WaitAsync();
+        try
+        {
         var cancellationRequest=request.cancellationRequest;
 
         if (!currentUserService.UserId.HasValue)
@@ -55,7 +60,12 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
         };
         await cancellationRepository.AddCancellation(cancellation);
         await unitOfWork.SaveChangesAsync();
-        await TryPromoteWaitlistedPassengersAsync(cancelPassengers);
+            await TryPromoteWaitlistedPassengersAsync(cancelPassengers);
+        }
+        finally
+        {
+            _bookingLock.Release();
+        }
     }
     private async Task TryPromoteWaitlistedPassengersAsync(List<Passenger> cancelledPassengers)
     {
@@ -77,7 +87,7 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
                 passenger.Status = BookingStatus.Confirmed;
                 passenger.CoachClass = cancelled.CoachClass;
 
-                waitingRepository.DeleteWaitlistEntryAsync(wait);
+                 waitingRepository.DeleteWaitlistEntryAsync(wait);
                 break; // 1 seat = 1 passenger
             }
         }
