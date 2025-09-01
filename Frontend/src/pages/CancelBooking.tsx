@@ -22,11 +22,11 @@ const CancelBooking = () => {
 
   const handleSearch = async () => {
     if (!pnrNumber) return;
-    
+
     setLoading(true);
     setError(null);
     setSearchResults(null);
-    
+
     try {
       const result = await getBooking(pnrNumber);
       setSearchResults(result);
@@ -40,8 +40,8 @@ const CancelBooking = () => {
   };
 
   const handlePassengerSelection = (passengerId: Number, checked: boolean) => {
-    setSelectedPassengers(prev => 
-      checked 
+    setSelectedPassengers(prev =>
+      checked
         ? [...prev, passengerId]
         : prev.filter(id => id !== passengerId)
     );
@@ -49,11 +49,11 @@ const CancelBooking = () => {
 
   const calculateRefund = () => {
     if (!searchResults || selectedPassengers.length === 0) return 0;
-    
+
     const selectedCount = selectedPassengers.length;
     const perPassengerAmount = searchResults.totalFare / searchResults.passengers.length;
     const cancellationFee = perPassengerAmount * 0.2; // 20% cancellation fee
-    
+
     return (perPassengerAmount - cancellationFee) * selectedCount;
   };
 
@@ -66,31 +66,31 @@ const CancelBooking = () => {
       });
       return;
     }
-    
+
     try {
       const cancellationRequest = {
         pnr: pnrNumber,
         passengerIds: selectedPassengers,
         reason: "User requested cancellation"
       };
-      
+      console.log(cancellationRequest)
       const refundAmount = calculateRefund();
       
       // Make the API call
       await cancelBooking(cancellationRequest);
-      
+
       // Show success toast
       toast({
         title: "Cancellation Successful",
         description: `${selectedPassengers.length} passenger(s) cancelled. Refund of ₹${refundAmount.toFixed(2)} will be processed in 3-5 business days.`,
         variant: "default"
       });
-      
+
       // Reset form
       setSearchResults(null);
       setSelectedPassengers([]);
       setPnrNumber(null);
-      
+
     } catch (error) {
       // Error toast will be shown by the apiClient interceptor
       console.error("Cancellation error:", error);
@@ -120,7 +120,7 @@ const CancelBooking = () => {
                   className="font-mono tracking-wider"
                 />
               </div>
-              <Button 
+              <Button
                 onClick={handleSearch}
                 variant="railway"
                 disabled={loading}
@@ -161,7 +161,7 @@ const CancelBooking = () => {
                     <Train className="h-5 w-5 text-primary" />
                     <span>Booking Details</span>
                   </div>
-                  <Badge 
+                  <Badge
                     variant={searchResults.bookingStatus === "Confirmed" ? "default" : "secondary"}
                     className="bg-accent text-accent-foreground"
                   >
@@ -180,7 +180,7 @@ const CancelBooking = () => {
                     {/* <p className="text-sm text-muted-foreground">#{searchResults.train.number}</p> */}
                   </div>
                   <div>
-                      
+
                     <Label className="text-sm text-primary">Journey Date</Label>
                     <p className="font-medium flex items-center">
                       <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
