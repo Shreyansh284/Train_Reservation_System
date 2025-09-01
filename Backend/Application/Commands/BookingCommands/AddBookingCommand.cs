@@ -92,13 +92,15 @@ public class AddBookingCommandHandler (
                 BookingId = booking.BookingId,
                 Name = pInfo.Name,
                 Age = pInfo.Age,
-                Gender = pInfo.Gender
+                Gender = pInfo.Gender,
+                CoachClass = Enum.Parse<CoachClass>(details.CoachClass, true)
             };
 
             if (i < confirmedCount)
             {
                 passenger.SeatId = i<seats.Count ? seats[i].SeatId:null;
                 passenger.Status = BookingStatus.Confirmed;
+                // passenger.CoachClass=seats[i].Coach.CoachClass;
             }
             else
             {
