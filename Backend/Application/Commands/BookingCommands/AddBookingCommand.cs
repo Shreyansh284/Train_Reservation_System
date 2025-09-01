@@ -45,53 +45,62 @@ public async Task<PassengerBookingInfoDTO> Handle(AddBookingCommand request, Can
         var bookingInfo = mapper.Map<PassengerBookingInfoDTO>(completeBooking);
 
         // ✅ Send booking confirmation email
-        string subject = $"Booking Confirmation - PNR {bookingInfo.PNR}";
-        string body = $"""
-        <html>
-        <body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; padding:20px;">
-            <div style="max-width:600px; margin:0 auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-                <h2 style="color:#2E86C1; text-align:center;">🎉 Booking Confirmed!</h2>
+string subject = $"Booking Confirmation - PNR {bookingInfo.PNR}";
+bool hasWaiting = bookingInfo.Passengers.Any(p => p.BookingStatus == "WAITING" || p.BookingStatus == "RAC");
 
-                <p>Dear <strong>{completeBooking.User.FullName}</strong>,</p>
-                <p>Your train booking has been successfully confirmed. Below are your journey details:</p>
+string body = $"""
+<html>
+<body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:0 auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+        <h2 style="color:#2E86C1; text-align:center;">🎉 Check Booking Details!</h2>
 
-                <table style="width:100%; border-collapse:collapse; margin:20px 0;">
-                    <tr><td style="padding:8px; border:1px solid #ddd;"><strong>PNR</strong></td><td style="padding:8px; border:1px solid #ddd;">{bookingInfo.PNR}</td></tr>
-                    <tr><td style="padding:8px; border:1px solid #ddd;"><strong>Train</strong></td><td style="padding:8px; border:1px solid #ddd;">{bookingInfo.TrainName}</td></tr>
-                    <tr><td style="padding:8px; border:1px solid #ddd;"><strong>From</strong></td><td style="padding:8px; border:1px solid #ddd;">{bookingInfo.FromStation}</td></tr>
-                    <tr><td style="padding:8px; border:1px solid #ddd;"><strong>To</strong></td><td style="padding:8px; border:1px solid #ddd;">{bookingInfo.ToStation}</td></tr>
-                    <tr><td style="padding:8px; border:1px solid #ddd;"><strong>Journey Date</strong></td><td style="padding:8px; border:1px solid #ddd;">{bookingInfo.JourneyDate:dd MMM yyyy}</td></tr>
-                    <tr><td style="padding:8px; border:1px solid #ddd;"><strong>Total Fare</strong></td><td style="padding:8px; border:1px solid #ddd;">₹{bookingInfo.TotalFare}</td></tr>
-                </table>
+        <p>Dear <strong>{completeBooking.User.FullName}</strong>,</p>
+        <p>Your train booking has been successfully processed. Below are your journey details:</p>
 
-                <h3 style="color:#2E86C1;">👥 Passenger Details</h3>
-                <table style="width:100%; border-collapse:collapse; margin:10px 0;">
-                    <tr style="background:#f2f2f2;">
-                        <th style="padding:8px; border:1px solid #ddd; text-align:left;">Name</th>
-                        <th style="padding:8px; border:1px solid #ddd; text-align:left;">Age</th>
-                        <th style="padding:8px; border:1px solid #ddd; text-align:left;">Gender</th>
-                        <th style="padding:8px; border:1px solid #ddd; text-align:left;">Seat</th>
-                    </tr>
-                    {string.Join("", bookingInfo.Passengers.Select(p => $"""
-                        <tr>
-                            <td style="padding:8px; border:1px solid #ddd;">{p.Name}</td>
-                            <td style="padding:8px; border:1px solid #ddd;">{p.Age}</td>
-                            <td style="padding:8px; border:1px solid #ddd;">{p.Gender}</td>
-                            <td style="padding:8px; border:1px solid #ddd;">{p.SeatNumber}</td>
-                        </tr>
-                    """))}
-                </table>
+        <table style="width:100%; border-collapse:collapse; margin:20px 0;">
+            <tr><td style="padding:8px; border:1px solid #ddd;"><strong>PNR</strong></td><td style="padding:8px; border:1px solid #ddd;">{bookingInfo.PNR}</td></tr>
+            <tr><td style="padding:8px; border:1px solid #ddd;"><strong>Train</strong></td><td style="padding:8px; border:1px solid #ddd;">{bookingInfo.TrainName}</td></tr>
+            <tr><td style="padding:8px; border:1px solid #ddd;"><strong>From</strong></td><td style="padding:8px; border:1px solid #ddd;">{bookingInfo.FromStation}</td></tr>
+            <tr><td style="padding:8px; border:1px solid #ddd;"><strong>To</strong></td><td style="padding:8px; border:1px solid #ddd;">{bookingInfo.ToStation}</td></tr>
+            <tr><td style="padding:8px; border:1px solid #ddd;"><strong>Journey Date</strong></td><td style="padding:8px; border:1px solid #ddd;">{bookingInfo.JourneyDate:dd MMM yyyy}</td></tr>
+            <tr><td style="padding:8px; border:1px solid #ddd;"><strong>Total Fare</strong></td><td style="padding:8px; border:1px solid #ddd;">₹{bookingInfo.TotalFare}</td></tr>
+        </table>
 
-                <p style="margin-top:20px;">Please carry a valid ID proof while traveling.</p>
-                <p style="margin-top:5px;">Wishing you a pleasant journey!</p>
+        <h3 style="color:#2E86C1;">👥 Passenger Details</h3>
+        <table style="width:100%; border-collapse:collapse; margin:10px 0;">
+            <tr style="background:#f2f2f2;">
+                <th style="padding:8px; border:1px solid #ddd; text-align:left;">Name</th>
+                <th style="padding:8px; border:1px solid #ddd; text-align:left;">Age</th>
+                <th style="padding:8px; border:1px solid #ddd; text-align:left;">Gender</th>
+                <th style="padding:8px; border:1px solid #ddd; text-align:left;">Seat</th>
+                <th style="padding:8px; border:1px solid #ddd; text-align:left;">Status</th>
+            </tr>
+            {string.Join("", bookingInfo.Passengers.Select(p => $"""
+                <tr>
+                    <td style="padding:8px; border:1px solid #ddd;">{p.Name}</td>
+                    <td style="padding:8px; border:1px solid #ddd;">{p.Age}</td>
+                    <td style="padding:8px; border:1px solid #ddd;">{p.Gender}</td>
+                    <td style="padding:8px; border:1px solid #ddd;">{p.SeatNumber}</td>
+                    <td style="padding:8px; border:1px solid #ddd; color:{(p.BookingStatus == "CONFIRMED" ? "green" : "red")}; font-weight:bold;">
+                        {p.BookingStatus}
+                    </td>
+                </tr>
+            """))}
+        </table>
 
-                <br />
-                <p>Regards,</p>
-                <p><strong>Reservation Team</strong></p>
-            </div>
-        </body>
-        </html>
-        """;
+        {(hasWaiting ? "<p style='color:#C0392B; font-weight:bold; margin-top:15px;'>⚠️ You will be informed by email if waiting passengers get confirmed seats.</p>" : "")}
+
+        <p style="margin-top:20px;">Please carry a valid ID proof while traveling.</p>
+        <p style="margin-top:5px;">Wishing you a pleasant journey!</p>
+
+        <br />
+        <p>Regards,</p>
+        <p><strong>Reservation Team</strong></p>
+    </div>
+</body>
+</html>
+""";
+
 
         await emailService.SendEmailAsync(completeBooking.User.Email, subject, body);
 
@@ -146,7 +155,9 @@ public async Task<PassengerBookingInfoDTO> Handle(AddBookingCommand request, Can
                 BookingId = booking.BookingId,
                 Name = pInfo.Name,
                 Age = pInfo.Age,
-                Gender = pInfo.Gender
+                Gender = pInfo.Gender,
+                CoachClass = Enum.Parse<CoachClass>(details.CoachClass, true)
+
             };
 
             if (i < confirmedCount)
