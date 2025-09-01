@@ -48,13 +48,17 @@ const Confirmation = () => {
     totalFare,
     passengers,
   } = bookingData;
+  // Build rebooking URL if train info is available
+  const rebookUrl = bookingData.trainId
+    ? `/book/${bookingData.trainId}?fromStationId=${bookingData.fromStationId}&toStationId=${bookingData.toStationId}&dateOfBooking=${bookingData.dateOfBooking}`
+    : "/search";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">
       <div className="container mx-auto px-4 py-8">
-        <Button 
-          variant="ghost" 
-          className="mb-4" 
+        <Button
+          variant="ghost"
+          className="mb-4"
           onClick={handleBack}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -79,8 +83,8 @@ const Confirmation = () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="flex-1 sm:flex-initial"
                 onClick={handleDownload}
               >
@@ -92,7 +96,7 @@ const Confirmation = () => {
                   Cancel Booking
                 </Button>
               </Link>
-              <Link to="/search" className="flex-1 sm:flex-initial">
+              <Link to={rebookUrl} className="flex-1 sm:flex-initial">
                 <Button variant="railway" className="w-full">
                   <Search className="mr-2 h-4 w-4" />
                   Book Another
