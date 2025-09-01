@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using Application.Exceptions;
+using Core.Entities;
 using Core.Enums;
 using Core.Interfaces;
 using Infrastructure.Data;
@@ -18,7 +19,7 @@ public class WaitingRepository(AppDbContext context):IWaitingRepository
     {
         if (!Enum.TryParse<CoachClass>(coachClass, true, out var parsedCoachClass))
         {
-            throw new ArgumentException("Invalid coach class value.");
+            throw new NotFoundException("Invalid coach class value.");
         }
 
         return await context.TrainWaitlists
