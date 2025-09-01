@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IEmailService, EmailService>();
 
         services.AddScoped<ITrainMappingHelper, TrainMappingHelper>();
 

@@ -29,6 +29,7 @@ public class BookingRepository(AppDbContext context):IBookingRepository
     public async Task<Booking?> GetBookingWithDetailsByPNR(long PNR)
     {
             return await context.Bookings
+                .Include(b=>b.User)
                 .Include(b => b.Train)
                 .Include(b => b.FromStation)
                 .Include(b => b.ToStation)

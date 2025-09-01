@@ -262,8 +262,7 @@ const CancelBooking = () => {
             </Card>
 
             {/* Cancellation Summary */}
-            {selectedPassengers.length > 0 && (
-              <Card className="bg-gradient-card shadow-elevated">
+            <Card className="bg-gradient-card shadow-elevated">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <AlertTriangle className="h-5 w-5 text-orange-500" />
@@ -304,6 +303,7 @@ const CancelBooking = () => {
                         variant="destructive"
                         size="lg"
                         className="mt-6"
+                        disabled={selectedPassengers.length === 0}
                       >
                         <AlertTriangle className="mr-2 h-5 w-5" />
                         Confirm Cancellation
@@ -324,7 +324,7 @@ const CancelBooking = () => {
                   </div>
                 </CardContent>
               </Card>
-            )}
+            {/* end Cancellation Summary */}
           </div>
         )}
       </div>

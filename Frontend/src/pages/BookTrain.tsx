@@ -34,11 +34,11 @@ const BookTrain = () => {
   // Handle unauthenticated users
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login', { 
+      navigate('/login', {
         replace: true,
-        state: { 
-          from: window.location.pathname + window.location.search 
-        } 
+        state: {
+          from: window.location.pathname + window.location.search
+        }
       });
       return;
     }
@@ -171,7 +171,16 @@ const BookTrain = () => {
       setLoading(true);
 
       const result = await bookTrain(Number(trainId), user.id, bookingRequest);
-      navigate("/confirmation", { state: result });
+      // Include search parameters to allow rebooking the same train
+      navigate("/confirmation", {
+        state: {
+          ...result,
+          trainId: Number(trainId),
+          fromStationId: Number(fromStationId),
+          toStationId: Number(toStationId),
+          dateOfBooking: dateOfBooking
+        }
+      });
     } catch (err: any) {
       toast({ title: "Booking failed", description: err.message, variant: "destructive" });
     } finally {
@@ -179,12 +188,14 @@ const BookTrain = () => {
     }
   };
 
- {loading && (
-          <div className="flex flex-col items-center justify-center my-12 space-y-4">
-            <TrainLoader size={40} />
-            <p className="text-muted-foreground text-sm">Fetching booking details...</p>
-          </div>
-        )}
+  {
+    loading && (
+      <div className="flex flex-col items-center justify-center my-12 space-y-4">
+        <TrainLoader size={40} />
+        <p className="text-muted-foreground text-sm">Fetching booking details...</p>
+      </div>
+    )
+  }
 
   if (error) {
     return (
