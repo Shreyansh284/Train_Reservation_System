@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Search, AlertTriangle, Users, Train, Calendar, RefreshCw, Route, CalendarCheck2 } from "lucide-react";
 import { Loading } from "@/components/ui/loading";
 import { useToast } from "@/hooks/use-toast";
-import { getBooking ,cancelBooking} from "@/lib/api";
+import { getBooking, cancelBooking } from "@/lib/api";
 import { TrainLoader } from "@/components/ui/TrainLoader";
 
 const CancelBooking = () => {
@@ -16,8 +16,8 @@ const CancelBooking = () => {
   const [pnrNumber, setPnrNumber] = useState<number | null>(null);
   const [searchResults, setSearchResults] = useState<any>(null);
   const [selectedPassengers, setSelectedPassengers] = useState<Number[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async () => {
@@ -66,7 +66,7 @@ const CancelBooking = () => {
       });
       return;
     }
-
+    setIsCancelling(true);
     try {
       const cancellationRequest = {
         pnr: pnrNumber,
@@ -94,6 +94,8 @@ const CancelBooking = () => {
     } catch (error) {
       // Error toast will be shown by the apiClient interceptor
       console.error("Cancellation error:", error);
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -143,11 +145,11 @@ const CancelBooking = () => {
         </Card>
 
         {loading && (
-                 <div className="flex flex-col items-center justify-center my-12 space-y-4">
-                   <TrainLoader size={40} />
-                   <p className="text-muted-foreground text-sm">Fetching booking details...</p>
-                 </div>
-               )}
+          <div className="flex flex-col items-center justify-center my-12 space-y-4">
+            <TrainLoader size={40} />
+            <p className="text-muted-foreground text-sm">Fetching booking details...</p>
+          </div>
+        )}
         {error && <div className="text-red-500">{error}</div>}
 
         {/* Booking Details */}
@@ -174,9 +176,9 @@ const CancelBooking = () => {
                   <div>
                     <Label className="text-sm text-primary">Train</Label>
                     <p className="font-medium flex items-center">
-                    <Train className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <Train className="h-4 w-4 mr-2 text-muted-foreground" />
                       {searchResults.trainName}
-                      </p>
+                    </p>
                     {/* <p className="text-sm text-muted-foreground">#{searchResults.train.number}</p> */}
                   </div>
                   <div>
@@ -207,11 +209,10 @@ const CancelBooking = () => {
               </CardHeader>
               <CardContent>
                 <div
-                  className={`space-y-3 ${
-                    searchResults.passengers.length > 5
+                  className={`space-y-3 ${searchResults.passengers.length > 5
                       ? "max-h-96 overflow-y-auto pr-2 custom-scrollbar"
                       : ""
-                  }`}
+                    }`}
                 >
                   {searchResults.passengers.map((passenger: any) => (
                     <div
@@ -245,11 +246,10 @@ const CancelBooking = () => {
                             >
                               {passenger.seatNumber}
                             </Badge>
-                            <p className={`text-xs mt-1 font-medium ${
-                              passenger.bookingStatus === "Cancelled"
+                            <p className={`text-xs mt-1 font-medium ${passenger.bookingStatus === "Cancelled"
                                 ? "text-red-500"
                                 : "text-green-600"
-                            }`}>
+                              }`}>
                               {passenger.bookingStatus}
                             </p>
                           </div>
@@ -263,67 +263,76 @@ const CancelBooking = () => {
 
             {/* Cancellation Summary */}
             <Card className="bg-gradient-card shadow-elevated">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <AlertTriangle className="h-5 w-5 text-orange-500" />
-                    <span>Cancellation Summary</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col md:flex-row md:items-start md:gap-8 gap-6">
-                    {/* Summary Details */}
-                    <div className="flex-1 space-y-3">
-                      <div className="flex justify-between">
-                        <span>Passengers to cancel:</span>
-                        <span className="font-medium">{selectedPassengers.length}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Original amount:</span>
-                        <span>₹{searchResults.totalFare}</span>
-                      </div>
-                      <div className="flex justify-between text-red-600">
-                        <span>Cancellation charges (20%):</span>
-                        <span>
-                          -₹
-                          {(
-                            ((searchResults.totalFare / searchResults.passengers.length) *
-                              selectedPassengers.length) *
-                            0.2
-                          ).toFixed(2)}
-                        </span>
-                      </div>
-                      <hr className="border-border" />
-                      <div className="flex justify-between text-lg font-bold">
-                        <span>Refund amount:</span>
-                        <span className="text-accent">₹{calculateRefund().toFixed(2)}</span>
-                      </div>
-                      {/* Button at the bottom of refund amount */}
-                      <Button
-                        onClick={handleCancellation}
-                        variant="destructive"
-                        size="lg"
-                        className="mt-6"
-                        disabled={selectedPassengers.length === 0}
-                      >
-                        <AlertTriangle className="mr-2 h-5 w-5" />
-                        Confirm Cancellation
-                      </Button>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <AlertTriangle className="h-5 w-5 text-orange-500" />
+                  <span>Cancellation Summary</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col md:flex-row md:items-start md:gap-8 gap-6">
+                  {/* Summary Details */}
+                  <div className="flex-1 space-y-3">
+                    <div className="flex justify-between">
+                      <span>Passengers to cancel:</span>
+                      <span className="font-medium">{selectedPassengers.length}</span>
                     </div>
-                    {/* Important Notes at right on desktop */}
-                    <div className="md:w-1/2 w-full">
-                      <div className="text-sm text-muted-foreground bg-muted/100 p-5 rounded mt-6 md:mt-0">
-                        <p className="font-medium mb-2">Important Notes:</p>
-                        <ul className="space-y-1">
-                          <li>• Refund will be processed to your original payment method</li>
-                          <li>• Processing time: 3-5 business days</li>
-                          <li>• Cancellation charges are non-refundable</li>
-                          <li>• Partially cancelled tickets cannot be re-booked</li>
-                        </ul>
-                      </div>
+                    <div className="flex justify-between">
+                      <span>Original amount:</span>
+                      <span>₹{searchResults.totalFare}</span>
+                    </div>
+                    <div className="flex justify-between text-red-600">
+                      <span>Cancellation charges (20%):</span>
+                      <span>
+                        -₹
+                        {(
+                          ((searchResults.totalFare / searchResults.passengers.length) *
+                            selectedPassengers.length) *
+                          0.2
+                        ).toFixed(2)}
+                      </span>
+                    </div>
+                    <hr className="border-border" />
+                    <div className="flex justify-between text-lg font-bold">
+                      <span>Refund amount:</span>
+                      <span className="text-accent">₹{calculateRefund().toFixed(2)}</span>
+                    </div>
+                    {/* Button at the bottom of refund amount */}
+                    <Button
+                      onClick={handleCancellation}
+                      variant="destructive"
+                      size="lg"
+                      className="mt-6"
+                      disabled={selectedPassengers.length === 0 || isCancelling}
+                    >
+                        {isCancelling ? (
+                          <>
+                            <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
+                            Cancelling...
+                          </>
+                        ) : (
+                          <>
+                            <AlertTriangle className="mr-2 h-5 w-5" />
+                            Confirm Cancellation
+                          </>
+                        )}
+                      </Button>
+                  </div>
+                  {/* Important Notes at right on desktop */}
+                  <div className="md:w-1/2 w-full">
+                    <div className="text-sm text-muted-foreground bg-muted/100 p-5 rounded mt-6 md:mt-0">
+                      <p className="font-medium mb-2">Important Notes:</p>
+                      <ul className="space-y-1">
+                        <li>• Refund will be processed to your original payment method</li>
+                        <li>• Processing time: 3-5 business days</li>
+                        <li>• Cancellation charges are non-refundable</li>
+                        <li>• Partially cancelled tickets cannot be re-booked</li>
+                      </ul>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </CardContent>
+            </Card>
             {/* end Cancellation Summary */}
           </div>
         )}
