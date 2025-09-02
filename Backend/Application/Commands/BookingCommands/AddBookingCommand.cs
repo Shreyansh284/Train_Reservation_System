@@ -8,14 +8,13 @@ using MediatR;
 
 namespace Application.Commands.BookingCommands;
 
-public record AddBookingCommand(int trainId,int userId,BookingRequestDTO bookingRequest):IRequest<PassengerBookingInfoDTO>;
+public record AddBookingCommand(int TrainId,int UserId,BookingRequestDTO BookingRequest):IRequest<PassengerBookingInfoDTO>;
 public class AddBookingCommandHandler (
     ITrainRepository trainRepository,
     ISeatRepository seatRepository,
     IBookingRepository bookingRepository,
     IPassengerRepository passengerRepository,
     IWaitingRepository waitingRepository,
-    ICurrentUserService currentUserService,
     IEmailService emailService,
     IMapper mapper,
     IUnitOfWork unitOfWork) : IRequestHandler<AddBookingCommand, PassengerBookingInfoDTO>
@@ -27,8 +26,8 @@ public async Task<PassengerBookingInfoDTO> Handle(AddBookingCommand request, Can
     await _bookingLock.WaitAsync(cancellationToken);
     try
     {
-        var bookingDetails = request.bookingRequest;
-        var train = await trainRepository.GetTrainByIdAsync(request.trainId);
+        var bookingDetails = request.BookingRequest;
+        var train = await trainRepository.GetTrainByIdAsync(request.TrainId);
 
         var availableSeats = await GetAvailableSeats(train, bookingDetails);
 
@@ -133,8 +132,8 @@ string body = $"""
         {
             FromStationId = details.FromStationId,
             ToStationId = details.ToStationId,
-            TrainId = request.trainId,
-            UserId = request.userId,
+            TrainId = request.TrainId,
+            UserId = request.UserId,
             JourneyDate = details.JourneyDate,
             TotalFare = details.TotalFare
         };
