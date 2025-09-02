@@ -73,24 +73,24 @@ const CancelBooking = () => {
         passengerIds: selectedPassengers,
         reason: "User requested cancellation"
       };
-      
+      console.log(cancellationRequest)
       const refundAmount = calculateRefund();
       
       // Make the API call
       await cancelBooking(cancellationRequest);
-      
+
       // Show success toast
       toast({
         title: "Cancellation Successful",
         description: `${selectedPassengers.length} passenger(s) cancelled. Refund of ₹${refundAmount.toFixed(2)} will be processed in 3-5 business days.`,
         variant: "default"
       });
-      
+
       // Reset form
       setSearchResults(null);
       setSelectedPassengers([]);
       setPnrNumber(null);
-      
+
     } catch (error) {
       // Error toast will be shown by the apiClient interceptor
       console.error("Cancellation error:", error);
