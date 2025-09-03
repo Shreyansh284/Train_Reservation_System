@@ -32,12 +32,13 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailNotificationService, EmailNotificationService>();
 
         services.AddScoped<ITrainMappingHelper, TrainMappingHelper>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         // Add HTTP context accessor
         services.AddHttpContextAccessor();
-        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         return services;
     }
