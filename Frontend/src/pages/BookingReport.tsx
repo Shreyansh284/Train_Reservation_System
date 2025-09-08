@@ -19,7 +19,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Download, RefreshCw, Filter } from 'lucide-react';
+import { ChevronDown, Download, RefreshCw, Filter, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface DisplayAllBookings {
@@ -42,6 +42,8 @@ const BookingReport: React.FC = () => {
     const [bookings, setBookings] = useState<DisplayAllBookings[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<string>('all');
+    const [sortField, setSortField] = useState<keyof DisplayAllBookings | null>(null);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
     const fetchBookings = async () => {
         try {
@@ -63,14 +65,50 @@ const BookingReport: React.FC = () => {
         fetchBookings();
     }, []);
 
-    const filteredBookings = bookings.filter((booking) => {
-        if (filter === 'all') return true;
-        // Filter based on seat types
-        if (filter === 'confirmed') return booking.confirmedSeats > 0;
-        if (filter === 'waiting') return booking.waitingSeats > 0;
-        if (filter === 'cancelled') return booking.cancelledSeats > 0;
-        return true;
-    });
+    const handleSort = (field: keyof DisplayAllBookings) => {
+        if (sortField === field) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortField(field);
+            setSortDirection('asc');
+        }
+    };
+
+    const getSortIcon = (field: keyof DisplayAllBookings) => {
+        if (sortField !== field) {
+            return <ArrowUpDown className="h-4 w-4" />;
+        }
+        return sortDirection === 'asc' ? 
+            <ArrowUp className="h-4 w-4" /> : 
+            <ArrowDown className="h-4 w-4" />;
+    };
+
+    const sortedAndFilteredBookings = bookings
+        .filter((booking) => {
+            if (filter === 'all') return true;
+            // Filter based on seat types
+            if (filter === 'confirmed') return booking.confirmedSeats > 0;
+            if (filter === 'waiting') return booking.waitingSeats > 0;
+            if (filter === 'cancelled') return booking.cancelledSeats > 0;
+            return true;
+        })
+        .sort((a, b) => {
+            if (!sortField) return 0;
+            
+            let aValue = a[sortField];
+            let bValue = b[sortField];
+            
+            // Handle date sorting
+            if (sortField === 'journeyDate') {
+                aValue = new Date(aValue as string).getTime();
+                bValue = new Date(bValue as string).getTime();
+            }
+            
+            // Handle string/number comparison
+            if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
 
     const totalBookings = bookings.length;
     const totalConfirmedSeats = bookings.reduce((sum, booking) => sum + booking.confirmedSeats, 0);
@@ -94,7 +132,7 @@ const BookingReport: React.FC = () => {
             'Total Fare'
         ];
 
-        const csvData = filteredBookings.map(booking => [
+        const csvData = sortedAndFilteredBookings.map(booking => [
             booking.pnr,
             booking.userName,
             booking.userEmail,
@@ -228,8 +266,26 @@ const BookingReport: React.FC = () => {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                {sortField && (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                            setSortField(null);
+                            setSortDirection('asc');
+                        }}
+                        className="flex items-center gap-2"
+                    >
+                        Clear Sort
+                    </Button>
+                )}
                 <div className="text-sm text-muted-foreground">
-                    Showing {filteredBookings.length} of {totalBookings} bookings
+                    Showing {sortedAndFilteredBookings.length} of {totalBookings} bookings
+                    {sortField && (
+                        <span className="ml-2">
+                            • Sorted by {sortField} ({sortDirection === 'asc' ? 'ascending' : 'descending'})
+                        </span>
+                    )}
                 </div>
             </div>
 
@@ -239,24 +295,51 @@ const BookingReport: React.FC = () => {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>PNR</TableHead>
+                                <TableHead>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-auto p-1 font-semibold hover:bg-gray-100 flex items-center gap-1"
+                                        onClick={() => handleSort('pnr')}
+                                    >
+                                        PNR {getSortIcon('pnr')}
+                                    </Button>
+                                </TableHead>
                                 <TableHead>User</TableHead>
-                                <TableHead>Train</TableHead>
+                                <TableHead>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-auto p-1 font-semibold hover:bg-gray-100 flex items-center gap-1"
+                                        onClick={() => handleSort('trainNumber')}
+                                    >
+                                        Train {getSortIcon('trainNumber')}
+                                    </Button>
+                                </TableHead>
                                 <TableHead>Route</TableHead>
-                                <TableHead>Journey Date</TableHead>
+                                <TableHead>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-auto p-1 font-semibold hover:bg-gray-100 flex items-center gap-1"
+                                        onClick={() => handleSort('journeyDate')}
+                                    >
+                                        Journey Date {getSortIcon('journeyDate')}
+                                    </Button>
+                                </TableHead>
                                 <TableHead>Seats</TableHead>
                                 <TableHead>Total Fare</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredBookings.length === 0 ? (
+                            {sortedAndFilteredBookings.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={7} className="text-center py-8">
                                         No bookings found
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                filteredBookings.map((booking, index) => (
+                                sortedAndFilteredBookings.map((booking, index) => (
                                     <TableRow key={`${booking.pnr}-${index}`}>
                                         <TableCell className="font-medium">{booking.pnr}</TableCell>
                                         <TableCell>
