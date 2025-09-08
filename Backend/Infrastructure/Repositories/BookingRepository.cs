@@ -1,4 +1,6 @@
-﻿using Core.Entities;
+﻿using Application.DTOs.BookingDTOs;
+using Core.Entities;
+using Core.Enums;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -11,20 +13,22 @@ public class BookingRepository(AppDbContext context):IBookingRepository
     {
         await context.Bookings.AddAsync(booking);
     }
-
     public async Task<IEnumerable<Booking>> GetAllBookings()
     {
-        return await context.Bookings.Include(b => b.Passengers)
-            .ThenInclude(p => p.Seat)
-            .ThenInclude(s => s.Coach)
+        return await context.Bookings
+            .Include(b => b.Passengers)
+                .ThenInclude(p => p.Seat)
+                    .ThenInclude(s => s.Coach)
             .Include(b => b.Train)
             .Include(b => b.FromStation)
             .Include(b => b.ToStation)
+            .Include(b => b.User)
             .OrderBy(b => b.PNR)
             .ThenBy(b => b.JourneyDate)
-            .ThenBy(b => b.TrainId)
+            .ThenBy(b => b.Train.TrainName)
             .ToListAsync();
     }
+
 
     public async Task<Booking?> GetBookingWithDetailsByPNR(long PNR)
     {

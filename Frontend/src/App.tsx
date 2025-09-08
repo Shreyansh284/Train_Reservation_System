@@ -14,6 +14,7 @@ const Index = lazy(() => import("./pages/Index"));
 const Search = lazy(() => import("./pages/Search"));
 const SearchResults = lazy(() => import("./pages/SearchResults"));
 const AdminAddTrain = lazy(() => import("./pages/AdminAddTrain"));
+const BookingReport = lazy(() => import("./pages/BookingReport"));
 const BookTrain = lazy(() => import("./pages/BookTrain"));
 const Confirmation = lazy(() => import("./pages/Confirmation"));
 const CancelBooking = lazy(() => import("./pages/CancelBooking"));
@@ -35,8 +36,8 @@ const AppContent = () => {
             <Route path="/" element={<Index />} />
             <Route path="/search" element={<Search />} />
             <Route path="/search/results" element={<SearchResults />} />
-          
-            
+
+
             {/* Auth routes - only accessible when not authenticated */}
             <Route path="/login" element={
               <Suspense fallback={<Loading className="min-h-[60vh]" />}>
@@ -69,8 +70,8 @@ const AppContent = () => {
                   <Confirmation />
                 </Suspense>
               } />
-                <Route path="/pnr" element={<PNRStatus />} />
-                <Route path="/pnr/:pnr" element={<PNRStatus />} />
+              <Route path="/pnr" element={<PNRStatus />} />
+              <Route path="/pnr/:pnr" element={<PNRStatus />} />
               <Route path="/cancel" element={
                 <Suspense fallback={<Loading className="min-h-[60vh]" />}>
                   <CancelBooking />
@@ -89,6 +90,11 @@ const AppContent = () => {
               <Route path="/admin/add-train" element={
                 <Suspense fallback={<Loading className="min-h-[60vh]" />}>
                   <AdminAddTrain />
+                </Suspense>
+              } />
+              <Route path="/admin/booking-report" element={
+                <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                  <BookingReport />
                 </Suspense>
               } />
             </Route>
