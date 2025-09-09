@@ -390,22 +390,22 @@ const Trains: React.FC = () => {
     };
 
     const getClassVariant = (coachClass: string) => {
- switch (coachClass.toLowerCase()) {
-    case 'a1':
-    case 'first ac':
-        return 'blue-500 ';     // First AC - blue
-    case 'a2':
-    case 'second ac':
-        return 'green-500';    // Second AC - green
-    case 'a3':
-    case 'third ac':
-        return 'yellow-500';   // Third AC - yellow  // Fourth AC - purple (using as taliwalnd)
-    case 'sl':
-    case 'sleeper':
-        return 'orange-500';   // Sleeper - orange
-    default:
-        return 'gray-200 ';     // Default - gray
-}
+        switch (coachClass.toLowerCase()) {
+            case 'a1':
+            case 'first ac':
+                return 'blue-500 ';     // First AC - blue
+            case 'a2':
+            case 'second ac':
+                return 'green-500';    // Second AC - green
+            case 'a3':
+            case 'third ac':
+                return 'yellow-500';   // Third AC - yellow  // Fourth AC - purple (using as taliwalnd)
+            case 'sl':
+            case 'sleeper':
+                return 'orange-500';   // Sleeper - orange
+            default:
+                return 'gray-200 ';     // Default - gray
+        }
 
     };
 
@@ -560,26 +560,26 @@ const Trains: React.FC = () => {
                 ) : (
                     sortedAndFilteredTrains.map((train) => (
                         <Card key={train.trainId} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
-                            <CardContent className="p-6">
-                                <div className="space-y-4">
+                            <CardContent className="p-4">
+                                <div className="space-y-3">
                                     {/* Train Header */}
                                     <div className="flex justify-between items-start">
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-3">
-                                                <h3 className="text-xl font-bold text-gray-900">
+                                        <div className="space-y-0.5">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="text-lg font-bold text-gray-900">
                                                     {train.trainNumber}
                                                 </h3>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-1">
                                                     <Switch
                                                         checked={train.isActive ?? true}
-                                                        className="data-[state=checked]:bg-green-500"
+                                                        className="data-[state=checked]:bg-green-500 scale-75"
                                                     />
-                                                    <span className="text-sm text-gray-600">
+                                                    <span className="text-xs text-gray-600">
                                                         {train.isActive ?? true ? 'Active' : 'Inactive'}
                                                     </span>
                                                 </div>
                                             </div>
-                                            <p className="text-lg text-gray-700 font-medium">{train.trainName}</p>
+                                            <p className="text-base text-gray-700 font-medium">{train.trainName}</p>
                                         </div>
                                         <div className="flex items-center gap-1">
                                             {train.isActive ?? true ? (
@@ -591,74 +591,74 @@ const Trains: React.FC = () => {
                                     </div>
 
                                     {/* Route Information */}
-                                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
+                                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                                                 <div>
-                                                    <p className="font-semibold text-gray-900">
+                                                    <p className="font-semibold text-gray-900 text-sm">
                                                         {train.sourceStation.stationName}
                                                     </p>
-                                                    <p className="text-sm text-gray-600">
+                                                    <p className="text-xs text-gray-600">
                                                         {train.sourceStation.stationCode} • {train.sourceStation.city}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center px-4">
-                                                <div className="flex-1 h-0.5 bg-gray-300 relative">
-                                                    <Train className="h-4 w-4 text-blue-600 absolute -top-2 left-1/2 transform -translate-x-1/2" />
+                                            <div className="flex items-center px-2">
+                                                <div className="flex-1 h-0.5 bg-gray-300 relative w-8">
+                                                    <Train className="h-3 w-3 text-blue-600 absolute -top-1.5 left-1/2 transform -translate-x-1/2" />
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <div className="text-right">
-                                                    <p className="font-semibold text-gray-900">
+                                                    <p className="font-semibold text-gray-900 text-sm">
                                                         {train.destinationStation.stationName}
                                                     </p>
-                                                    <p className="text-sm text-gray-600">
+                                                    <p className="text-xs text-gray-600">
                                                         {train.destinationStation.stationCode} • {train.destinationStation.city}
                                                     </p>
                                                 </div>
-                                                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                                                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Quick Stats */}
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div className="text-center bg-gray-50 rounded-lg p-3">
-                                            <div className="text-2xl font-bold text-blue-600">
+                                    <div className="grid grid-cols-3 gap-3">
+                                        <div className="text-center bg-gray-50 rounded-lg p-2">
+                                            <div className="text-lg font-bold text-blue-600">
                                                 {train.coaches.length}
                                             </div>
-                                            <div className="text-sm text-gray-600">Coaches</div>
+                                            <div className="text-xs text-gray-600">Coaches</div>
                                         </div>
-                                        <div className="text-center bg-gray-50 rounded-lg p-3">
-                                            <div className="text-2xl font-bold text-green-600">
+                                        <div className="text-center bg-gray-50 rounded-lg p-2">
+                                            <div className="text-lg font-bold text-green-600">
                                                 {train.coaches.reduce((sum, coach) => sum + coach.totalSeats, 0)}
                                             </div>
-                                            <div className="text-sm text-gray-600">Total Seats</div>
+                                            <div className="text-xs text-gray-600">Total Seats</div>
                                         </div>
-                                        <div className="text-center bg-gray-50 rounded-lg p-3">
-                                            <div className="text-2xl font-bold text-purple-600">
+                                        <div className="text-center bg-gray-50 rounded-lg p-2">
+                                            <div className="text-lg font-bold text-purple-600">
                                                 {train.schedules.length}
                                             </div>
-                                            <div className="text-sm text-gray-600">Stations</div>
+                                            <div className="text-xs text-gray-600">Stations</div>
                                         </div>
                                     </div>
 
                                     {/* Coach Preview */}
-                                    <div className="space-y-2">
-                                        <h4 className="font-semibold text-gray-900 flex items-center gap-2">
-                                            <Car className="h-4 w-4" />
+                                    <div className="space-y-1">
+                                        <h4 className="font-semibold text-gray-900 flex items-center gap-1 text-sm">
+                                            <Car className="h-3 w-3" />
                                             Coach Classes
                                         </h4>
-                                        <div className="flex flex-wrap gap-2">
+                                        <div className="flex flex-wrap gap-1">
                                             {[...new Set(train.coaches.map(c => c.coachClass))].map((coachClass) => {
                                                 const count = train.coaches.filter(c => c.coachClass === coachClass).length;
                                                 return (
                                                     <Badge
                                                         key={coachClass}
                                                         // variant={getClassVariant(coachClass)}
-                                                        className={`px-3 py-1 bg-${getClassVariant(coachClass)}`}
+                                                        className={`px-2 py-0.5 text-xs bg-${getClassVariant(coachClass)}`}
                                                     >
                                                         {coachClass} ({count})
                                                     </Badge>
@@ -668,11 +668,11 @@ const Trains: React.FC = () => {
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="flex justify-end gap-2 pt-4 border-t">
+                                    <div className="flex justify-end gap-2 pt-2 border-t">
                                         <Dialog>
                                             <DialogTrigger asChild>
-                                                <Button variant="outline" size="sm" className="flex items-center gap-2">
-                                                    <Route className="h-4 w-4" />
+                                                <Button variant="outline" size="sm" className="flex items-center gap-1 h-8 text-xs">
+                                                    <Route className="h-3 w-3" />
                                                     View Route
                                                 </Button>
                                             </DialogTrigger>
@@ -681,8 +681,8 @@ const Trains: React.FC = () => {
 
                                         <Dialog>
                                             <DialogTrigger asChild>
-                                                <Button variant="outline" size="sm" className="flex items-center gap-2">
-                                                    <Eye className="h-4 w-4" />
+                                                <Button variant="outline" size="sm" className="flex items-center gap-1 h-8 text-xs">
+                                                    <Eye className="h-3 w-3" />
                                                     View Coaches
                                                 </Button>
                                             </DialogTrigger>
