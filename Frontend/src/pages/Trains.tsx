@@ -5,6 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loading } from '@/components/ui/loading';
 import { toast } from '@/components/ui/use-toast';
+import { Switch } from '@/components/ui/switch';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import apiClient from '@/lib/apiClient';
 import {
     Table,
@@ -37,7 +45,18 @@ import {
     MapPin,
     Users,
     Route,
-    Plus
+    Plus,
+    Eye,
+    Clock,
+    Wifi,
+    Coffee,
+    Utensils,
+    Car,
+    Navigation,
+    Circle,
+    CheckCircle2,
+    XCircle,
+    Power
 } from 'lucide-react';
 
 interface DisplayStationDTO {
@@ -69,7 +88,261 @@ interface DisplayTrainDTO {
     destinationStation: DisplayStationDTO;
     coaches: DisplayCoachDTO[];
     schedules: DisplayTrainScheduleDTO[];
+    isActive?: boolean; // For future API integration
 }
+
+// Coach Details Modal Component
+const CoachDetailsModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
+    const getCoachGradient = (coachClass: string) => {
+        switch (coachClass.toLowerCase()) {
+            case 'a1':
+            case 'first ac':
+                return 'bg-gradient-to-r from-purple-500 to-pink-500';
+            case 'a2':
+            case 'second ac':
+                return 'bg-gradient-to-r from-blue-500 to-cyan-500';
+            case 'a3':
+            case 'third ac':
+                return 'bg-gradient-to-r from-green-500 to-teal-500';
+            case 'sl':
+            case 'sleeper':
+                return 'bg-gradient-to-r from-orange-500 to-red-500';
+            default:
+                return 'bg-gradient-to-r from-gray-500 to-gray-600';
+        }
+    };
+
+
+    return (
+        <DialogContent className="max-w-4xl max-h-[80vh]">
+            <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                    <Train className="h-5 w-5" />
+                    {train.trainNumber} - {train.trainName} Coaches
+                </DialogTitle>
+            </DialogHeader>
+
+            <div className="max-h-[70vh] overflow-y-auto pr-2 space-y-6">
+                {/* Realistic Train Visual Layout */}
+                <div className="bg-gradient-to-b from-gray-100 to-gray-200 p-6 rounded-lg">
+                    <h3 className="font-semibold mb-4 flex items-center gap-2">
+                        <Train className="h-5 w-5" />
+                        Train Carriage - {train.trainNumber}
+                    </h3>
+
+                    {/* Train Track */}
+                    <div className="relative overflow-x-auto overflow-y-hidden">
+                        {/* Railway Tracks */}
+                        <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2">
+                            <div className="h-1 bg-gray-800 relative">
+                                {/* Track ties */}
+                                <div className="absolute inset-0 flex justify-between items-center">
+                                    {Array.from({ length: 20 }).map((_, i) => (
+                                        <div key={i} className="w-0.5 h-4 bg-gray-600 -translate-y-1.5"></div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="h-1 bg-gray-800 mt-2 relative">
+                                <div className="absolute inset-0 flex justify-between items-center">
+                                    {Array.from({ length: 20 }).map((_, i) => (
+                                        <div key={i} className="w-0.5 h-4 bg-gray-600 translate-y-1.5"></div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Train Engine */}
+                        <div className="relative z-10 flex items-center min-w-max">
+
+                            <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-l-full rounded-r-lg p-4 min-w-[100px] text-white shadow-xl border-4 border-red-800 relative">
+                                <div className="text-center">
+                                    <div className="font-bold text-sm">ENGINE</div>
+                                    <div className="text-xs opacity-90"></div>
+                                </div>
+                                {/* Engine Details */}
+                                <div className="absolute -top-2 -right-1 w-3 h-3 bg-yellow-400 rounded-full"></div>
+                                <div className="absolute top-1 right-1 w-1 h-1 bg-white rounded-full"></div>
+                                <div className="absolute bottom-1 right-1 w-1 h-1 bg-white rounded-full"></div>
+                                {/* Smoke effect */}
+                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full opacity-60 animate-pulse"></div>
+                                    <div className="w-1 h-1 bg-gray-300 rounded-full opacity-40 animate-pulse delay-100 ml-1 -mt-1"></div>
+                                </div>
+                            </div>
+
+                            {/* Coupling between engine and first coach */}
+                            <div className="w-4 h-2 bg-gray-600 shadow-lg relative z-5">
+                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-gray-800 rounded-full"></div>
+                            </div>
+
+                            {/* Train Coaches */}
+                            <div className="flex items-center">
+                                {train.coaches.map((coach, index) => (
+                                    <React.Fragment key={coach.coachId}>
+                                        {/* Coach Carriage */}
+                                        <div
+                                            className={`${getCoachGradient(coach.coachClass)} 
+                                                       relative min-w-[140px] h-20 text-white shadow-xl 
+                                                       transform hover:scale-105 transition-all duration-300
+                                                       hover:shadow-2xl cursor-pointer border-4 border-gray-700
+                                                       ${index === 0 ? 'rounded-l-lg' : ''}
+                                                       ${index === train.coaches.length - 1 ? 'rounded-r-lg' : ''}`}
+                                            style={{
+                                                clipPath: index === 0 ? 'polygon(0 0, 100% 0, 100% 100%, 5% 100%)' :
+                                                    index === train.coaches.length - 1 ? 'polygon(0 0, 95% 0, 100% 100%, 0 100%)' :
+                                                        'polygon(0 0, 100% 0, 100% 100%, 0 100%)'
+                                            }}
+                                        >
+                                            {/* Coach Body */}
+                                            <div className="absolute inset-0 p-3 flex flex-col justify-center items-center">
+                                                <div className="font-bold text-sm">{coach.coachNumber}</div>
+                                                <div className="text-xs opacity-90 font-medium">{coach.coachClass}</div>
+                                                <div className="text-xs mt-1 bg-black bg-opacity-20 px-2 py-0.5 rounded">
+                                                    {coach.totalSeats} seats
+                                                </div>
+                                            </div>
+
+                                            {/* Wheels */}
+                                            <div className="absolute -bottom-3 left-3">
+                                                <div className="w-4 h-4 bg-gray-800 rounded-full border-2 border-gray-600">
+                                                    <div className="w-2 h-2 bg-gray-400 rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                                                </div>
+                                            </div>
+                                            <div className="absolute -bottom-3 right-3">
+                                                <div className="w-4 h-4 bg-gray-800 rounded-full border-2 border-gray-600">
+                                                    <div className="w-2 h-2 bg-gray-400 rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                                                </div>
+                                            </div>
+
+                                            {/* Coach Class Indicator */}
+                                            <div className="absolute top-0 right-0 bg-white bg-opacity-90 text-gray-800 text-xs px-1 rounded-bl font-semibold">
+                                                {coach.coachClass}
+                                            </div>
+                                        </div>
+
+                                        {/* Coupling between coaches */}
+                                        {index < train.coaches.length - 1 && (
+                                            <div className="w-3 h-2 bg-gray-600 shadow-lg relative z-5">
+                                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-gray-800 rounded-full"></div>
+                                            </div>
+                                        )}
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Direction Indicator */}
+                    <div className="flex justify-between items-center mt-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-2">
+                            <div className="w-0 h-0 border-l-4 border-l-green-500 border-y-4 border-y-transparent"></div>
+                            <span>Direction of Travel</span>
+                        </div>
+                        <div className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                            Total Length: ~{train.coaches.length * 20 + 15}m
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </DialogContent>
+    );
+};
+
+// Station Route Modal Component
+const StationRouteModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
+    const sortedSchedules = [...train.schedules].sort((a, b) => a.distanceFromSource - b.distanceFromSource);
+
+    const getStationColor = (index: number, total: number) => {
+        if (index === 0) return 'text-green-600 bg-green-100'; // Origin
+        if (index === total - 1) return 'text-red-600 bg-red-100'; // Destination
+        return 'text-blue-600 bg-blue-100'; // Intermediate stops
+    };
+
+    return (
+        <DialogContent className="max-w-3xl max-h-[80vh]">
+            <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                    <Route className="h-5 w-5" />
+                    {train.trainNumber} - Route Information
+                </DialogTitle>
+            </DialogHeader>
+
+            <div className="max-h-[60vh] overflow-y-auto pr-2 space-y-6">
+                {/* Route Overview */}
+                <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Circle className="h-3 w-3 text-green-600 fill-current" />
+                                <span className="font-semibold">{train.sourceStation.stationName}</span>
+                                <span className="text-sm text-gray-600">({train.sourceStation.stationCode})</span>
+                            </div>
+                            <Navigation className="h-5 w-5 text-gray-400" />
+                            <div className="flex items-center gap-2">
+                                <span className="font-semibold">{train.destinationStation.stationName}</span>
+                                <span className="text-sm text-gray-600">({train.destinationStation.stationCode})</span>
+                                <Circle className="h-3 w-3 text-red-600 fill-current" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Route Timeline */}
+                <div className="space-y-4">
+                    <h3 className="font-semibold flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        Station Schedule
+                    </h3>
+
+                    <div className="relative">
+                        {/* Timeline Line */}
+                        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-300"></div>
+
+                        {sortedSchedules.map((schedule, index) => (
+                            <div key={schedule.scheduleId} className="relative flex items-start gap-4 pb-6">
+                                {/* Timeline Dot */}
+                                <div className={`relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white shadow-lg ${getStationColor(index, sortedSchedules.length)}`}>
+                                    <Circle className="h-3 w-3 fill-current" />
+                                </div>
+
+                                {/* Station Information */}
+                                <Card className="flex-1 hover:shadow-md transition-shadow duration-200">
+                                    <CardContent className="p-4">
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <h4 className="font-semibold text-lg">{schedule.station.stationName}</h4>
+                                                    <p className="text-sm text-gray-600">
+                                                        {schedule.station.stationCode} • {schedule.station.city}, {schedule.station.state}
+                                                    </p>
+                                                </div>
+                                                <Badge variant="outline">
+                                                    {schedule.distanceFromSource} km
+                                                </Badge>
+                                            </div>
+
+                                            <div className="flex items-center gap-4 text-sm">
+                                                <div className="flex items-center gap-1">
+                                                    <MapPin className="h-4 w-4 text-gray-500" />
+                                                    <span>Platform TBD</span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <Clock className="h-4 w-4 text-gray-500" />
+                                                    <span>Time TBD</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </DialogContent>
+    );
+};
 
 const Trains: React.FC = () => {
     const [trains, setTrains] = useState<DisplayTrainDTO[]>([]);
@@ -117,22 +390,23 @@ const Trains: React.FC = () => {
     };
 
     const getClassVariant = (coachClass: string) => {
-        switch (coachClass.toLowerCase()) {
-            case 'a1':
-            case 'first ac':
-                return 'default';
-            case 'a2':
-            case 'second ac':
-                return 'secondary';
-            case ' a3':
-            case 'third ac':
-                return 'outline';
-            case 'sl':
-            case 'sleeper':
-                return 'destructive';
-            default:
-                return 'outline';
-        }
+ switch (coachClass.toLowerCase()) {
+    case 'a1':
+    case 'first ac':
+        return 'blue-500 ';     // First AC - blue
+    case 'a2':
+    case 'second ac':
+        return 'green-500';    // Second AC - green
+    case 'a3':
+    case 'third ac':
+        return 'yellow-500';   // Third AC - yellow  // Fourth AC - purple (using as taliwalnd)
+    case 'sl':
+    case 'sleeper':
+        return 'orange-500';   // Sleeper - orange
+    default:
+        return 'gray-200 ';     // Default - gray
+}
+
     };
 
     const sortedAndFilteredTrains = trains
@@ -226,9 +500,27 @@ const Trains: React.FC = () => {
                 </Card>
             </div>
 
-            {/* Filters */}
-            <div className="flex justify-between items-center">
-                <div className="flex gap-2">
+            {/* Filters and Sorting */}
+            <div className="flex justify-between items-center flex-wrap gap-4">
+                <div className="flex gap-2 flex-wrap">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="flex items-center gap-2">
+                                <ArrowUpDown className="h-4 w-4" />
+                                Sort by
+                                <ChevronDown className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => handleSort('trainNumber')}>
+                                Train Number {sortField === 'trainNumber' && getSortIcon('trainNumber')}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleSort('trainName')}>
+                                Train Name {sortField === 'trainName' && getSortIcon('trainName')}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
                     {sortField && (
                         <Button
                             variant="outline"
@@ -253,131 +545,156 @@ const Trains: React.FC = () => {
                 </div>
             </div>
 
-            {/* Trains Table */}
-            <Card>
-                <CardContent className="p-0">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-auto p-1 font-semibold hover:bg-gray-100 flex items-center gap-1"
-                                        onClick={() => handleSort('trainNumber')}
-                                    >
-                                        Train Number {getSortIcon('trainNumber')}
-                                    </Button>
-                                </TableHead>
-                                <TableHead>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-auto p-1 font-semibold hover:bg-gray-100 flex items-center gap-1"
-                                        onClick={() => handleSort('trainName')}
-                                    >
-                                        Train Name {getSortIcon('trainName')}
-                                    </Button>
-                                </TableHead>
-                                <TableHead>Route</TableHead>
-                                <TableHead>Coaches</TableHead>
-                                <TableHead>Total Seats</TableHead>
-                                <TableHead>Stations</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {sortedAndFilteredTrains.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-8">
-                                        No trains found
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                sortedAndFilteredTrains.map((train, index) => (
-                                    <TableRow key={`${train.trainId}-${index}`}>
-                                        <TableCell className="font-medium">
-                                            {train.trainNumber}
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="font-medium">{train.trainName}</div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="space-y-1">
+            {/* Trains Grid */}
+            <div className="space-y-4">
+                {sortedAndFilteredTrains.length === 0 ? (
+                    <Card>
+                        <CardContent className="flex items-center justify-center py-12">
+                            <div className="text-center">
+                                <Train className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">No trains found</h3>
+                                <p className="text-gray-600">Try adjusting your filters or add a new train.</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    sortedAndFilteredTrains.map((train) => (
+                        <Card key={train.trainId} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
+                            <CardContent className="p-6">
+                                <div className="space-y-4">
+                                    {/* Train Header */}
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-1">
+                                            <div className="flex items-center gap-3">
+                                                <h3 className="text-xl font-bold text-gray-900">
+                                                    {train.trainNumber}
+                                                </h3>
                                                 <div className="flex items-center gap-2">
-                                                    <MapPin className="h-3 w-3 text-green-600" />
-                                                    <span className="text-sm font-medium">
-                                                        {train.sourceStation.stationCode}
+                                                    <Switch
+                                                        checked={train.isActive ?? true}
+                                                        className="data-[state=checked]:bg-green-500"
+                                                    />
+                                                    <span className="text-sm text-gray-600">
+                                                        {train.isActive ?? true ? 'Active' : 'Inactive'}
                                                     </span>
-                                                    <span className="text-xs text-muted-foreground">
+                                                </div>
+                                            </div>
+                                            <p className="text-lg text-gray-700 font-medium">{train.trainName}</p>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            {train.isActive ?? true ? (
+                                                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                            ) : (
+                                                <XCircle className="h-5 w-5 text-red-500" />
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Route Information */}
+                                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                                <div>
+                                                    <p className="font-semibold text-gray-900">
                                                         {train.sourceStation.stationName}
-                                                    </span>
+                                                    </p>
+                                                    <p className="text-sm text-gray-600">
+                                                        {train.sourceStation.stationCode} • {train.sourceStation.city}
+                                                    </p>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <MapPin className="h-3 w-3 text-red-600" />
-                                                    <span className="text-sm font-medium">
-                                                        {train.destinationStation.stationCode}
-                                                    </span>
-                                                    <span className="text-xs text-muted-foreground">
+                                            </div>
+                                            <div className="flex items-center px-4">
+                                                <div className="flex-1 h-0.5 bg-gray-300 relative">
+                                                    <Train className="h-4 w-4 text-blue-600 absolute -top-2 left-1/2 transform -translate-x-1/2" />
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="text-right">
+                                                    <p className="font-semibold text-gray-900">
                                                         {train.destinationStation.stationName}
-                                                    </span>
+                                                    </p>
+                                                    <p className="text-sm text-gray-600">
+                                                        {train.destinationStation.stationCode} • {train.destinationStation.city}
+                                                    </p>
                                                 </div>
+                                                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                                             </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex flex-wrap gap-1">
-                                                {train.coaches.map((coach) => (
+                                        </div>
+                                    </div>
+
+                                    {/* Quick Stats */}
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="text-center bg-gray-50 rounded-lg p-3">
+                                            <div className="text-2xl font-bold text-blue-600">
+                                                {train.coaches.length}
+                                            </div>
+                                            <div className="text-sm text-gray-600">Coaches</div>
+                                        </div>
+                                        <div className="text-center bg-gray-50 rounded-lg p-3">
+                                            <div className="text-2xl font-bold text-green-600">
+                                                {train.coaches.reduce((sum, coach) => sum + coach.totalSeats, 0)}
+                                            </div>
+                                            <div className="text-sm text-gray-600">Total Seats</div>
+                                        </div>
+                                        <div className="text-center bg-gray-50 rounded-lg p-3">
+                                            <div className="text-2xl font-bold text-purple-600">
+                                                {train.schedules.length}
+                                            </div>
+                                            <div className="text-sm text-gray-600">Stations</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Coach Preview */}
+                                    <div className="space-y-2">
+                                        <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                                            <Car className="h-4 w-4" />
+                                            Coach Classes
+                                        </h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {[...new Set(train.coaches.map(c => c.coachClass))].map((coachClass) => {
+                                                const count = train.coaches.filter(c => c.coachClass === coachClass).length;
+                                                return (
                                                     <Badge
-                                                        key={coach.coachId}
-                                                        variant={getClassVariant(coach.coachClass)}
-                                                        className="text-xs"
+                                                        key={coachClass}
+                                                        // variant={getClassVariant(coachClass)}
+                                                        className={`px-3 py-1 bg-${getClassVariant(coachClass)}`}
                                                     >
-                                                        {coach.coachNumber} ({coach.coachClass})
+                                                        {coachClass} ({count})
                                                     </Badge>
-                                                ))}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="font-medium">
-                                            {train.coaches.reduce((sum, coach) => sum + coach.totalSeats, 0)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Accordion type="single" collapsible>
-                                                <AccordionItem value={`stations-${train.trainId}`}>
-                                                    <AccordionTrigger className="py-2">
-                                                        <span className="text-sm">
-                                                            {train.schedules.length} stations
-                                                        </span>
-                                                    </AccordionTrigger>
-                                                    <AccordionContent>
-                                                        <div className="space-y-2 max-h-48 overflow-y-auto">
-                                                            {train.schedules
-                                                                .sort((a, b) => a.distanceFromSource - b.distanceFromSource)
-                                                                .map((schedule) => (
-                                                                    <div key={schedule.scheduleId} className="flex justify-between items-center text-xs border-b pb-1">
-                                                                        <div>
-                                                                            <span className="font-medium">
-                                                                                {schedule.station.stationCode}
-                                                                            </span>
-                                                                            <span className="ml-2 text-muted-foreground">
-                                                                                {schedule.station.stationName}
-                                                                            </span>
-                                                                        </div>
-                                                                        <span className="text-muted-foreground">
-                                                                            {schedule.distanceFromSource} km
-                                                                        </span>
-                                                                    </div>
-                                                                ))}
-                                                        </div>
-                                                    </AccordionContent>
-                                                </AccordionItem>
-                                            </Accordion>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex justify-end gap-2 pt-4 border-t">
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                                                    <Route className="h-4 w-4" />
+                                                    View Route
+                                                </Button>
+                                            </DialogTrigger>
+                                            <StationRouteModal train={train} />
+                                        </Dialog>
+
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                                                    <Eye className="h-4 w-4" />
+                                                    View Coaches
+                                                </Button>
+                                            </DialogTrigger>
+                                            <CoachDetailsModal train={train} />
+                                        </Dialog>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))
+                )}
+            </div>
         </div>
     );
 };
