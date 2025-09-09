@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Train, Search, Ticket, Settings, Calendar, User, LogOut, FileText } from "lucide-react";
+import { Train, Search, Ticket, Settings, Calendar, User, LogOut, FileText, Database } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   DropdownMenu,
@@ -99,6 +99,18 @@ const Navigation = () => {
                 >
                   <FileText className="h-4 w-4" />
                   <span>Booking Report</span>
+                </Button>
+              </Link>
+            )}
+
+            {user?.role === 'Admin' && (
+              <Link to="/admin/trains">
+                <Button
+                  variant={isActive("/admin/trains") ? "railway" : "ghost"}
+                  className="flex items-center space-x-2"
+                >
+                  <Database className="h-4 w-4" />
+                  <span>Trains</span>
                 </Button>
               </Link>
             )}

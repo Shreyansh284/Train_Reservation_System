@@ -15,6 +15,7 @@ const Search = lazy(() => import("./pages/Search"));
 const SearchResults = lazy(() => import("./pages/SearchResults"));
 const AdminAddTrain = lazy(() => import("./pages/AdminAddTrain"));
 const BookingReport = lazy(() => import("./pages/BookingReport"));
+const Trains = lazy(() => import("./pages/Trains"));
 const BookTrain = lazy(() => import("./pages/BookTrain"));
 const Confirmation = lazy(() => import("./pages/Confirmation"));
 const CancelBooking = lazy(() => import("./pages/CancelBooking"));
@@ -95,6 +96,11 @@ const AppContent = () => {
               <Route path="/admin/booking-report" element={
                 <Suspense fallback={<Loading className="min-h-[60vh]" />}>
                   <BookingReport />
+                </Suspense>
+              } />
+              <Route path="/admin/trains" element={
+                <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                  <Trains />
                 </Suspense>
               } />
             </Route>

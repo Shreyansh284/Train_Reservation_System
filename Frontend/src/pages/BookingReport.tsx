@@ -78,8 +78,8 @@ const BookingReport: React.FC = () => {
         if (sortField !== field) {
             return <ArrowUpDown className="h-4 w-4" />;
         }
-        return sortDirection === 'asc' ? 
-            <ArrowUp className="h-4 w-4" /> : 
+        return sortDirection === 'asc' ?
+            <ArrowUp className="h-4 w-4" /> :
             <ArrowDown className="h-4 w-4" />;
     };
 
@@ -94,16 +94,16 @@ const BookingReport: React.FC = () => {
         })
         .sort((a, b) => {
             if (!sortField) return 0;
-            
+
             let aValue = a[sortField];
             let bValue = b[sortField];
-            
+
             // Handle date sorting
             if (sortField === 'journeyDate') {
                 aValue = new Date(aValue as string).getTime();
                 bValue = new Date(bValue as string).getTime();
             }
-            
+
             // Handle string/number comparison
             if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
             if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
