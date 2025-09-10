@@ -31,7 +31,7 @@ namespace WebApi.Tests.Controllers
         public async Task GetAllBookings_ShouldReturnOkResult_WithBookings()
         {
             // Arrange
-            var expectedBookings = _fixture.CreateMany<PassengerBookingInfoDTO>(3).ToList();
+            var expectedBookings = _fixture.CreateMany<DisplayAllBookingsDTO>(3).ToList();
             _senderMock.Setup(x => x.Send(It.IsAny<GetAllBookingsQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedBookings);
 
@@ -40,7 +40,7 @@ namespace WebApi.Tests.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var bookings = Assert.IsAssignableFrom<List<PassengerBookingInfoDTO>>(okResult.Value);
+            var bookings = Assert.IsAssignableFrom<List<DisplayAllBookingsDTO>>(okResult.Value);
             Assert.Equal(expectedBookings.Count, bookings.Count);
         }
 

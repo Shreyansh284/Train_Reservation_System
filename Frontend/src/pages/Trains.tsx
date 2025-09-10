@@ -84,6 +84,7 @@ interface DisplayTrainDTO {
     trainId: number;
     trainNumber: string;
     trainName: string;
+
     sourceStation: DisplayStationDTO;
     destinationStation: DisplayStationDTO;
     coaches: DisplayCoachDTO[];
@@ -347,7 +348,7 @@ const StationRouteModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
 const Trains: React.FC = () => {
     const [trains, setTrains] = useState<DisplayTrainDTO[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<string>('all');
+    const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
     const [sortField, setSortField] = useState<keyof DisplayTrainDTO | null>(null);
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -364,6 +365,32 @@ const Trains: React.FC = () => {
             });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const toggleTrainStatus = async (trainId: number, currentStatus: boolean) => {
+        try {
+            const response = await apiClient.patch(`/train/${trainId}/toggle-status`);
+            // Update the local state to reflect the change
+            setTrains(prevTrains =>
+                prevTrains.map(train =>
+                    train.trainId === trainId
+                        ? { ...train, isActive: !currentStatus }
+                        : train
+                )
+            );
+            // Show API message if present, else fallback
+            toast({
+                title: 'Success',
+                description: response?.data?.msg || response?.data?.message || `Train status ${!currentStatus ? 'activated' : 'deactivated'} successfully`,
+                variant: 'default',
+            });
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description: 'Failed to toggle train status',
+                variant: 'destructive',
+            });
         }
     };
 
@@ -412,16 +439,14 @@ const Trains: React.FC = () => {
     const sortedAndFilteredTrains = trains
         .filter((train) => {
             if (filter === 'all') return true;
-            // Add filtering logic if needed
+            if (filter === 'active') return train.isActive;
+            if (filter === 'inactive') return !train.isActive;
             return true;
         })
         .sort((a, b) => {
             if (!sortField) return 0;
-
             let aValue = a[sortField];
             let bValue = b[sortField];
-
-            // Handle string/number comparison
             if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
             if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
             return 0;
@@ -502,7 +527,31 @@ const Trains: React.FC = () => {
 
             {/* Filters and Sorting */}
             <div className="flex justify-between items-center flex-wrap gap-4">
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap items-center">
+                    {/* Filter Buttons */}
+                    <Button
+                        variant={filter === 'all' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilter('all')}
+                    >
+                        All
+                    </Button>
+                    <Button
+                        variant={filter === 'active' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilter('active')}
+                    >
+                        Active
+                    </Button>
+                    <Button
+                        variant={filter === 'inactive' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilter('inactive')}
+                    >
+                        Inactive
+                    </Button>
+
+                    {/* Sort Dropdown */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" size="sm" className="flex items-center gap-2">
@@ -571,7 +620,8 @@ const Trains: React.FC = () => {
                                                 </h3>
                                                 <div className="flex items-center gap-1">
                                                     <Switch
-                                                        checked={train.isActive ?? true}
+                                                        checked={train.isActive}
+                                                        onCheckedChange={() => toggleTrainStatus(train.trainId, train.isActive ?? true)}
                                                         className="data-[state=checked]:bg-green-500 scale-75"
                                                     />
                                                     <span className="text-xs text-gray-600">
@@ -582,7 +632,7 @@ const Trains: React.FC = () => {
                                             <p className="text-base text-gray-700 font-medium">{train.trainName}</p>
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            {train.isActive ?? true ? (
+                                            {train.isActive ? (
                                                 <CheckCircle2 className="h-5 w-5 text-green-500" />
                                             ) : (
                                                 <XCircle className="h-5 w-5 text-red-500" />

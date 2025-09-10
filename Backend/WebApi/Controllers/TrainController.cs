@@ -21,9 +21,9 @@ public class TrainController(ISender sender) : ControllerBase
     }
     [Authorize(Roles = "Admin")]
     [HttpGet("train/{trainId}")]
-    public async Task<IActionResult> GetTrainByNumber(int trainId)
+    public async Task<IActionResult> GetTrainById(int trainId)
     {
-        var train = await sender.Send(new GetTrainByNumberQuery(trainId));
+        var train = await sender.Send(new GetTrainByIdQuery(trainId));
         return Ok(train);
     }
     [Authorize(Roles = "Admin")]
@@ -34,7 +34,7 @@ public class TrainController(ISender sender) : ControllerBase
         return Ok(result);
     }
     [Authorize(Roles = "Admin")]
-    [HttpPatch("/train/{trainId}/toggle-status")]
+    [HttpPatch("train/{trainId}/toggle-status")]
     public async Task<IActionResult> ToggleStatus(int trainId)
     {
         var trainStatus=await sender.Send(new ToggleTrainStatusCommand(trainId));
@@ -48,7 +48,7 @@ public class TrainController(ISender sender) : ControllerBase
         }
     }
     [Authorize(Roles = "Admin")]
-    [HttpPatch("/train/{trainId}/")]
+    [HttpPatch("train/{trainId}/")]
     public async Task<IActionResult> EditTrainDetails(int trainId, [FromBody] EditTrainDetailsDTO editDetails)
     {
         // var validator = _validatorFactory.GetValidator<EditTrainDetailsDTO>();

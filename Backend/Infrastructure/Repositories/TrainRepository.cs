@@ -19,7 +19,6 @@ public class TrainRepository(AppDbContext context):ITrainRepository
             .Include(t => t.Coaches)
             .Include(t => t.Schedules)
             .ThenInclude(s => s.Station)
-            .Where(t => t.IsActive)
             .ToListAsync();
     }
 

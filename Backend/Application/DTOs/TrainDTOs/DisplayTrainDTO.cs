@@ -10,6 +10,7 @@ public class DisplayTrainDTO
     public string TrainNumber { get; set; } = null!;
     public string TrainName { get; set; } = null!;
 
+    public bool IsActive { get; set; } = true;
     public DisplayStationDTO SourceStation { get; set; } = null!;
     public DisplayStationDTO DestinationStation { get; set; } = null!;
 
