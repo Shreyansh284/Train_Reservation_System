@@ -10,7 +10,7 @@ namespace WebApi.Controllers;
 public class CancellationController(ISender sender):ControllerBase
 {
     [Authorize]
-    [HttpPost("cancel-booking")]
+    [HttpPost("cancelbooking")]
     public async Task<IActionResult> CancelBooking(CancellationRequestDTO cancellationRequest)
     {
         await sender.Send(new BookingCancellationCommand(cancellationRequest));

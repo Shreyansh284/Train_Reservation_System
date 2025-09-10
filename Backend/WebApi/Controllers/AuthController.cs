@@ -1,3 +1,4 @@
+using Application.Commands.UserCommand;
 using Application.DTOs.UserDTOs;
 using Application.Queries.UserQueries;
 using Core.Interfaces;
@@ -8,9 +9,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class AuthController(IAuthService authService, IMediator mediator) : ControllerBase
+[Route("api/")]
+public class AuthController(IAuthService authService, ISender sender) : ControllerBase
 {
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] UserRegisterationDTO userDto)
+    {
+        var user = await sender.Send(new AddUserCommand(userDto));
+        return Ok(user);
+    }
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginUserDTO dto)
@@ -28,7 +35,9 @@ public class AuthController(IAuthService authService, IMediator mediator) : Cont
     public async Task<ActionResult<UserResponseDto>> GetCurrentUser()
     {
         var query = new GetCurrentUserQuery();
-        var user = await mediator.Send(query);
+        var user = await sender.Send(query);
         return Ok(user);
     }
+
+
 }

@@ -18,14 +18,14 @@ public class BookingController(ISender sender):ControllerBase
         return Ok(bookings);
     }
     [Authorize]
-    [HttpPost("booking/train/{trainId}/user/{userId}")]
+    [HttpPost("booking/trains/{trainId}/users/{userId}")]
     public async Task<IActionResult> Booking(int trainId, int userId,BookingRequestDTO request)
     {
         var bookingDetails=await sender.Send(new AddBookingCommand(trainId, userId, request));
         return Ok(bookingDetails);
     }
     [Authorize]
-    [HttpGet("booking/{pnr}")]
+    [HttpGet("bookings/{pnr}")]
     public async Task<IActionResult> GetBooking(long pnr)
     {
         var booking = await sender.Send(new GetTicketByPNRQuery(pnr));

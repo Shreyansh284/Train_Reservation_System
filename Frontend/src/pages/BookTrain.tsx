@@ -209,17 +209,6 @@ const BookTrain = () => {
     );
   }
 
-  if (!trainData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Train not found</h2>
-          <p className="text-muted-foreground mb-4">The requested train could not be found.</p>
-          <Button onClick={() => navigate('/search')}>Back to Search</Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-[calc(100vh-56px)] bg-gradient-to-br from-background to-muted">

@@ -12,7 +12,7 @@ namespace WebApi.Controllers;
 [Route("api/")]
 public class TrainController(ISender sender) : ControllerBase
 {
-    [HttpGet("train")]
+    [HttpGet("trains")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllTrains()
     {
@@ -20,21 +20,21 @@ public class TrainController(ISender sender) : ControllerBase
         return Ok(trains);
     }
     [Authorize(Roles = "Admin")]
-    [HttpGet("train/{trainId}")]
+    [HttpGet("trains/{trainId}")]
     public async Task<IActionResult> GetTrainById(int trainId)
     {
         var train = await sender.Send(new GetTrainByIdQuery(trainId));
         return Ok(train);
     }
     [Authorize(Roles = "Admin")]
-    [HttpPost("train")]
+    [HttpPost("trains")]
     public async Task<IActionResult> AddTrain([FromBody] CreateTrainDTO dto)
     {
         var result = await sender.Send(new AddTrainCommand(dto));
         return Ok(result);
     }
     [Authorize(Roles = "Admin")]
-    [HttpPatch("train/{trainId}/toggle-status")]
+    [HttpPatch("trains/{trainId}/status")]
     public async Task<IActionResult> ToggleStatus(int trainId)
     {
         var trainStatus=await sender.Send(new ToggleTrainStatusCommand(trainId));
@@ -48,7 +48,7 @@ public class TrainController(ISender sender) : ControllerBase
         }
     }
     [Authorize(Roles = "Admin")]
-    [HttpPatch("train/{trainId}/")]
+    [HttpPatch("trains/{trainId}")]
     public async Task<IActionResult> EditTrainDetails(int trainId, [FromBody] EditTrainDetailsDTO editDetails)
     {
         // var validator = _validatorFactory.GetValidator<EditTrainDetailsDTO>();
@@ -61,14 +61,14 @@ public class TrainController(ISender sender) : ControllerBase
 
     }
     [Authorize(Roles = "Admin")]
-    [HttpPatch("train/{trainId}/station/{stationId}")]
+    [HttpPatch("trains/{trainId}/stations/{stationId}")]
     public async Task<IActionResult> EditTrainStation(int trainId, int stationId, EditTrainStationDTO editTrainStation)
     {
         var train = await sender.Send(new EditTrainStationCommand(trainId, stationId, editTrainStation));
         return Ok(train);
     }
     [Authorize(Roles = "Admin")]
-    [HttpPatch("train/{trainId}/toggleCoach/{coachId}")]
+    [HttpPatch("trains/{trainId}/coaches/{coachId}/status")]
     public async Task<IActionResult> ToggleTrainCoach(int trainId, int coachId)
     {
         var coachStatus=await sender.Send(new ToggleTrainCoachCommand(trainId, coachId));
@@ -83,7 +83,7 @@ public class TrainController(ISender sender) : ControllerBase
 
     }
 
-    [HttpGet("searchTrains/")]
+    [HttpGet("trains/search")]
     public async Task<IActionResult> SearchTrain([FromQuery]SearchTrainRequestDTO request)
     {
         var trainDetails = await sender.Send(new GetAvailableTrainsForSearchRequestQuery(request));
@@ -94,7 +94,7 @@ public class TrainController(ISender sender) : ControllerBase
         return Ok(trainDetails);
     }
 
-    [HttpGet("train/{trainId}/search")]
+    [HttpGet("trains/{trainId}/search")]
     public async Task<IActionResult> GetTrainDetailBySearchRequest(int trainId,
         [FromQuery] SearchTrainRequestDTO search)
     {

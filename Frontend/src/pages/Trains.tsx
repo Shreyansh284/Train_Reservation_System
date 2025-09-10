@@ -355,7 +355,7 @@ const Trains: React.FC = () => {
     const fetchTrains = async () => {
         try {
             setLoading(true);
-            const response = await apiClient.get('/train');
+            const response = await apiClient.get('/trains');
             setTrains(response.data || []);
         } catch (error) {
             toast({
@@ -370,7 +370,7 @@ const Trains: React.FC = () => {
 
     const toggleTrainStatus = async (trainId: number, currentStatus: boolean) => {
         try {
-            const response = await apiClient.patch(`/train/${trainId}/toggle-status`);
+            const response = await apiClient.patch(`/trains/${trainId}/status`);
             // Update the local state to reflect the change
             setTrains(prevTrains =>
                 prevTrains.map(train =>

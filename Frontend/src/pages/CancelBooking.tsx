@@ -52,7 +52,7 @@ const CancelBooking = () => {
 
     const selectedCount = selectedPassengers.length;
     const perPassengerAmount = searchResults.totalFare / searchResults.passengers.length;
-    const cancellationFee = perPassengerAmount * 0.2; // 20% cancellation fee
+    const cancellationFee = perPassengerAmount * 0.0; // 0% cancellation fee
 
     return (perPassengerAmount - cancellationFee) * selectedCount;
   };

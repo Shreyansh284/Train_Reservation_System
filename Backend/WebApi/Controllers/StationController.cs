@@ -10,7 +10,7 @@ namespace WebApi.Controllers;
 public class StationController(ISender sender):ControllerBase
 {
     // public async
-    [HttpGet("station/search")]
+    [HttpGet("stations/search")]
     public async Task<IActionResult> GetStationsByQueryAsync([FromQuery]string query)
     {
         if (string.IsNullOrWhiteSpace(query))

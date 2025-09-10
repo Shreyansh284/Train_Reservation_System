@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const fetchUserData = async (token: string) => {
         try {
-            const response = await apiClient.get('/Auth/me');
+            const response = await apiClient.get('/me');
             const userData = response.data;
             setUser({
                 id: userData.userId,
@@ -72,8 +72,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             await fetchUserData(token);
             return true;
         } catch (error) {
-            // Error is already handled by the apiClient interceptor
-            // Just rethrow to allow the calling component to handle it if needed
             throw error;
         } finally {
             setIsLoading(false);

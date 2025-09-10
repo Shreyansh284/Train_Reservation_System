@@ -12,12 +12,12 @@ interface TrainResultsProps {
     toStationId: number;
     onBook: (trainId: number, fromStationId: number, toStationId: number) => void;
 }
-const calculatePrice = (coachType: string, distance: number = 0) => {
+const calculatePrice = (coachType: string, distance: number ) => {
     // Base prices per km for different coach types
     const basePrices: Record<string, number> = {
-        '1A': 4,
-        '2A': 3,
-        '3A': 2,
+        'A1': 4,
+        'A2': 3,
+        'A3': 2,
         'SL': 1,
 
     };

@@ -48,7 +48,7 @@ const BookingReport: React.FC = () => {
     const fetchBookings = async () => {
         try {
             setLoading(true);
-            const response = await apiClient.get('/bookings');
+            const response = await apiClient.get('/bookings'); // already correct, matches backend
             setBookings(response.data || []);
         } catch (error) {
             toast({
