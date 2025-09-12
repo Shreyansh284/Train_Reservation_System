@@ -58,12 +58,11 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
             Reason = cancellationRequest.Reason,
             TotalRefundAmount = refund
         };
-        await cancellationRepository.AddCancellation(cancellation);
-        await unitOfWork.SaveChangesAsync();
-       await emailNotificationService.SendBookingCancellationAsync(booking,cancelPassengers,refund);
+         await cancellationRepository.AddCancellation(cancellation);
+         await unitOfWork.SaveChangesAsync();
+         await emailNotificationService.SendBookingCancellationAsync(booking,cancelPassengers,refund);
 
-
-            await TryPromoteWaitlistedPassengersAsync(cancelPassengers);
+         await TryPromoteWaitlistedPassengersAsync(cancelPassengers);
         }
         finally
         {
