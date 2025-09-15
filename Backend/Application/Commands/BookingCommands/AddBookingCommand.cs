@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Application.Commands.BookingCommands;
 
-public record AddBookingCommand(int TrainId,int UserId,BookingRequestDTO BookingRequest):IRequest<PassengerBookingInfoDTO>;
+public record AddBookingCommand(int trainId,int userId,BookingRequestDTO bookingRequestDTO):IRequest<PassengerBookingInfoDTO>;
 public class AddBookingCommandHandler (
     ITrainRepository trainRepository,
     ISeatRepository seatRepository,
@@ -26,8 +26,9 @@ public async Task<PassengerBookingInfoDTO> Handle(AddBookingCommand request, Can
     await _bookingLock.WaitAsync(cancellationToken);
     try
     {
-        var bookingDetails = request.BookingRequest;
-        var train = await trainRepository.GetTrainByIdAsync(request.TrainId);
+        var bookingDetails = request.bookingRequestDTO;
+
+        var train = await trainRepository.GetTrainByIdAsync(request.trainId);
 
         var availableSeats = await GetAvailableSeats(train, bookingDetails);
 
@@ -51,8 +52,6 @@ public async Task<PassengerBookingInfoDTO> Handle(AddBookingCommand request, Can
         _bookingLock.Release();
     }
 }
-
-
     private async Task<List<Seat>> GetAvailableSeats(Train train, BookingRequestDTO details)
     {
         var availableSeats = new List<Seat>();

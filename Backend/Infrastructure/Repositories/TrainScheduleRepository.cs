@@ -22,8 +22,8 @@ public class TrainScheduleRepository(AppDbContext context) : ITrainScheduleRepos
     }
 
 
-        public async Task<int> GetDistanceBetweenStationsAsync(int trainId,int startStationId, int endStationId)
-        {
+    public async Task<int> GetDistanceBetweenStationsAsync(int trainId,int startStationId, int endStationId)
+    {
             var start = await context.TrainSchedules
                 .Where(s => s.StationId == startStationId && s.TrainId==trainId)
                 .Select(s => s.DistanceFromSource)
@@ -35,7 +35,15 @@ public class TrainScheduleRepository(AppDbContext context) : ITrainScheduleRepos
                 .FirstOrDefaultAsync();
 
             return Math.Abs(end - start);
-        }
+    }
+
+    public async Task<List<TrainSchedule>> GetTrainSchedulesByCoachIdAsync(int coachId)
+    {
+        return await context.TrainSchedules
+        .Where(ts => ts.Train.Coaches.Any(c => c.CoachId == coachId))
+        .ToListAsync();
+    }
+
 
 
 }

@@ -14,7 +14,11 @@ public class PassengerRepository(AppDbContext context):IPassengerRepository
 
     public async Task<Passenger?> GetPassengerById(int id)
     {
-        return await context.Passengers.FirstOrDefaultAsync(p=>p.PassengerId == id);
+        return await context.Passengers
+                        .Include(p => p.Booking)
+                            .ThenInclude(b => b.Train)
+                        .FirstOrDefaultAsync(p => p.PassengerId == id);
+
     }
     public async Task<IEnumerable<Passenger>> GetPassengerByBookingIdAsync(int id)
     {

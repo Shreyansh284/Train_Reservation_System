@@ -11,7 +11,7 @@ namespace Application.Commands.CancellationCommands;
 public  record BookingCancellationCommand(CancellationRequestDTO cancellationRequest):IRequest;
 
 public class BookingCancellationCommandHandler(IBookingRepository bookingRepository,IPassengerRepository passengerRepository,
-    ICancellationRepository cancellationRepository,IWaitingRepository waitingRepository,ICurrentUserService currentUserService,IEmailNotificationService emailNotificationService,IUnitOfWork unitOfWork) : IRequestHandler<BookingCancellationCommand>
+    ICancellationRepository cancellationRepository,IWaitingRepository waitingRepository,ITrainScheduleRepository trainScheduleRepository,ICurrentUserService currentUserService,IEmailNotificationService emailNotificationService,IUnitOfWork unitOfWork) : IRequestHandler<BookingCancellationCommand>
 {
     private static readonly SemaphoreSlim _bookingLock = new(1, 1);
 
@@ -77,10 +77,15 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
 
             var waitlist = await waitingRepository.GetWaitlistedPassengerOfTrainByCoachClassAndDate(cancelled.Booking.TrainId, cancelled.Booking.JourneyDate, cancelled.CoachClass.ToString());
 
+            var trainScheduleStations = await trainScheduleRepository.GetTrainSchedulesByCoachIdAsync(cancelled.Seat.CoachId);
+            var fromStation = trainScheduleStations.FirstOrDefault(s => s.StationId == cancelled.Booking.FromStationId);
+            var toStation = trainScheduleStations.FirstOrDefault(s => s.StationId == cancelled.Booking.ToStationId);
             foreach (var wait in waitlist)
             {
-                if (!IsOverlapping(cancelled.Booking.FromStationId, cancelled.Booking.ToStationId,
-                        wait.FromStationId, wait.ToStationId))
+                var waitToStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.ToStationId);
+                var waitFromStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.FromStationId);
+
+                if (IsOverlapping(fromStation.DistanceFromSource,toStation.DistanceFromSource,waitFromStation.DistanceFromSource, waitToStation.DistanceFromSource))
                     continue;
 
                 // Update waitlisted passenger
@@ -90,7 +95,9 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
                 passenger.CoachClass = cancelled.CoachClass;
 
                  waitingRepository.DeleteWaitlistEntryAsync(wait);
-                 await emailNotificationService.SendWaitlistPromotionEmailAsync(passenger);
+                await unitOfWork.SaveChangesAsync();
+
+                await emailNotificationService.SendWaitlistPromotionEmailAsync(passenger);
 
                 break; // 1 seat = 1 passenger
             }
@@ -101,7 +108,8 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
 
     private bool IsOverlapping(int from1, int to1, int from2, int to2)
     {
-        return !(to2 <= from1 || from2 >= to1);
+        return !(to2 <= from1 || from2 >= to1 || (from1 == from2 && to1 == to2));
     }
+
 
 }
