@@ -5,14 +5,14 @@ using MediatR;
 
 namespace Application.Commands.StationCommands;
 
-public record GetStationCommand(string query):IRequest<IEnumerable<DisplayStationDTO>>;
+public record GetStationCommand(string StationName):IRequest<IEnumerable<DisplayStationDTO>>;
 
 public class GetStationCommandHandler(IStationRepository stationRepository,IMapper mapper) : IRequestHandler<GetStationCommand, IEnumerable<DisplayStationDTO>>
 {
     public async Task<IEnumerable<DisplayStationDTO>> Handle(GetStationCommand request,
         CancellationToken cancellationToken)
     {
-        var stations= await stationRepository.GetStationsByQueryAsync(request.query);
+        var stations= await stationRepository.GetStationsByQueryAsync(request.StationName);
         return mapper.Map<IEnumerable<DisplayStationDTO>>(stations);
     }
 }

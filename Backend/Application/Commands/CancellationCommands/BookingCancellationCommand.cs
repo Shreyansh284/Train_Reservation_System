@@ -8,10 +8,10 @@ using MediatR;
 
 namespace Application.Commands.CancellationCommands;
 
-public  record BookingCancellationCommand(CancellationRequestDTO cancellationRequest):IRequest;
+public record BookingCancellationCommand(CancellationRequestDTO CancellationRequest) : IRequest;
 
-public class BookingCancellationCommandHandler(IBookingRepository bookingRepository,IPassengerRepository passengerRepository,
-    ICancellationRepository cancellationRepository,IWaitingRepository waitingRepository,ITrainScheduleRepository trainScheduleRepository,ICurrentUserService currentUserService,IEmailNotificationService emailNotificationService,IUnitOfWork unitOfWork) : IRequestHandler<BookingCancellationCommand>
+public class BookingCancellationCommandHandler(IBookingRepository bookingRepository, IPassengerRepository passengerRepository,
+    ICancellationRepository cancellationRepository, IWaitingRepository waitingRepository, ITrainScheduleRepository trainScheduleRepository, ICurrentUserService currentUserService, IEmailNotificationService emailNotificationService, IUnitOfWork unitOfWork) : IRequestHandler<BookingCancellationCommand>
 {
     private static readonly SemaphoreSlim _bookingLock = new(1, 1);
 
@@ -20,49 +20,49 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
         await _bookingLock.WaitAsync();
         try
         {
-        var cancellationRequest=request.cancellationRequest;
+            var cancellationRequest = request.CancellationRequest;
 
-        if (!currentUserService.UserId.HasValue)
-        {
-            throw new UnauthorizedAccessException("User not authenticated");
-        }
-        var booking = await bookingRepository.GetBookingWithDetailsByPNR(cancellationRequest.PNR);
-        if (booking == null)
-        {
-            throw new NotFoundException("InValid PNR");
-        }
-        var userId = currentUserService.UserId.Value;
-        if (booking.UserId != userId)
-        {
-            throw new UnauthorizedAccessException("User not authorized");
-        }
+            if (!currentUserService.UserId.HasValue)
+            {
+                throw new UnauthorizedAccessException("User not authenticated");
+            }
+            var booking = await bookingRepository.GetBookingWithDetailsByPNR(cancellationRequest.PNR);
+            if (booking == null)
+            {
+                throw new NotFoundException("Invalid PNR");
+            }
+            var userId = currentUserService.UserId.Value;
+            if (booking.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("User not authorized");
+            }
 
-        var cancelPassengers =  booking.Passengers
-            .Where(p => cancellationRequest.PassengerIds.Contains(p.PassengerId) && p.Status != BookingStatus.Cancelled)
-            .ToList();
-        if (!cancelPassengers.Any())
-        {
-            throw new NotFoundException("Passenger not found");
-        }
-        decimal refund = 0;
+            var cancelPassengers = booking.Passengers
+                .Where(p => cancellationRequest.PassengerIds.Contains(p.PassengerId) && p.Status != BookingStatus.Cancelled)
+                .ToList();
+            if (!cancelPassengers.Any())
+            {
+                throw new NotFoundException("Passenger not found");
+            }
+            decimal refund = 0;
 
-        foreach (var passenger in cancelPassengers)
-        {
-            passenger.Status = BookingStatus.Cancelled;
-            refund += booking.TotalFare/booking.Passengers.Count;
-        }
-        var cancellation = new Cancellation
-        {
-            BookingId = booking.BookingId,
-            CancelledByUserId = booking.UserId,
-            Reason = cancellationRequest.Reason,
-            TotalRefundAmount = refund
-        };
-         await cancellationRepository.AddCancellation(cancellation);
-         await unitOfWork.SaveChangesAsync();
-         await emailNotificationService.SendBookingCancellationAsync(booking,cancelPassengers,refund);
+            foreach (var passenger in cancelPassengers)
+            {
+                passenger.Status = BookingStatus.Cancelled;
+                refund += booking.TotalFare / booking.Passengers.Count;
+            }
+            var cancellation = new Cancellation
+            {
+                BookingId = booking.BookingId,
+                CancelledByUserId = booking.UserId,
+                Reason = cancellationRequest.Reason,
+                TotalRefundAmount = refund
+            };
+            await cancellationRepository.AddCancellation(cancellation);
+            await unitOfWork.SaveChangesAsync();
+            await emailNotificationService.SendBookingCancellationAsync(booking, cancelPassengers, refund);
 
-         await TryPromoteWaitlistedPassengersAsync(cancelPassengers);
+            await TryPromoteWaitlistedPassengersAsync(cancelPassengers);
         }
         finally
         {
@@ -85,7 +85,7 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
                 var waitToStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.ToStationId);
                 var waitFromStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.FromStationId);
 
-                if (IsOverlapping(fromStation.DistanceFromSource,toStation.DistanceFromSource,waitFromStation.DistanceFromSource, waitToStation.DistanceFromSource))
+                if (IsOverlapping(fromStation.DistanceFromSource, toStation.DistanceFromSource, waitFromStation.DistanceFromSource, waitToStation.DistanceFromSource))
                     continue;
 
                 // Update waitlisted passenger
@@ -94,7 +94,7 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
                 passenger.Status = BookingStatus.Confirmed;
                 passenger.CoachClass = cancelled.CoachClass;
 
-                 waitingRepository.DeleteWaitlistEntryAsync(wait);
+                waitingRepository.DeleteWaitlistEntryAsync(wait);
                 await unitOfWork.SaveChangesAsync();
 
                 await emailNotificationService.SendWaitlistPromotionEmailAsync(passenger);
