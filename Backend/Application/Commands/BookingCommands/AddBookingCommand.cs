@@ -37,7 +37,7 @@ public class AddBookingCommandHandler(
 
             var availableSeats = await GetAvailableSeats(train, bookingDetails);
 
-            int confirmedPassengerCount = Math.Min(availableSeats.Count, bookingDetails.Passangers.Count);
+            int confirmedPassengerCount = Math.Min(availableSeats.Count, bookingDetails.Passengers.Count);
 
             var booking = await CreateBooking(request, bookingDetails);
 
@@ -46,6 +46,10 @@ public class AddBookingCommandHandler(
             await AddToWaitlistAsync(booking, bookingDetails);
 
             var completeBooking = await bookingRepository.GetBookingWithDetailsByPNR(booking.PNR);
+            if (completeBooking == null)
+            {
+                throw new NotFoundException("Booking could not be loaded after creation.");
+            }
             var passengerBookingInfoDTO = mapper.Map<PassengerBookingInfoDTO>(completeBooking);
             await emailNotificationService.SendBookingConfirmationAsync(passengerBookingInfoDTO, completeBooking);
 
@@ -90,9 +94,9 @@ public class AddBookingCommandHandler(
 
     private async Task AddPassengersAsync(Booking booking, BookingRequestDTO bookingRequestDto, List<Seat> seats, int confirmedPassengerCount)
     {
-        for (int i = 0; i < bookingRequestDto.Passangers.Count; i++)
+        for (int i = 0; i < bookingRequestDto.Passengers.Count; i++)
         {
-            var passengerInfo = bookingRequestDto.Passangers[i];
+            var passengerInfo = bookingRequestDto.Passengers[i];
             var passenger = new Passenger
             {
                 BookingId = booking.BookingId,

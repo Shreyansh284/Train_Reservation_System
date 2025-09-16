@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Queries.TrainQueries;
 
-public record GetAvailableTrainsForSearchRequestQuery(SearchTrainRequestDTO searchTrain):IRequest<List<TrainAvailabilityDTO>>;
+public record GetAvailableTrainsForSearchRequestQuery(SearchTrainRequestDTO SearchTrainRequestDTO):IRequest<List<TrainAvailabilityDTO>>;
 
 public class GetAvailableTrainsForSearchRequestQueryHandler(
     ITrainRepository _trainRepository,
@@ -15,7 +15,7 @@ public class GetAvailableTrainsForSearchRequestQueryHandler(
     public async Task<List<TrainAvailabilityDTO>> Handle(GetAvailableTrainsForSearchRequestQuery request,
         CancellationToken cancellationToken)
     {
-        var searchDto = request.searchTrain;
+        var searchDto = request.SearchTrainRequestDTO;
 
         var trains = await _trainRepository.GetTrainsBetweenStationsAsync(
             searchDto.FromStationId, searchDto.ToStationId

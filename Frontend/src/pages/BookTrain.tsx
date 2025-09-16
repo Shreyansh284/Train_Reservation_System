@@ -119,7 +119,7 @@ const BookTrain = () => {
     ));
   };
 
-  const getPricePerPerson = (coachType, distanceInKm, passangers = 1) => {
+  const getPricePerPerson = (coachType, distanceInKm, passengers = 1) => {
     const fareRates = {
       SL: 1,   // Sleeper
       A3: 2,   // 3rd AC
@@ -128,7 +128,7 @@ const BookTrain = () => {
     };
 
     const rate = fareRates[coachType] || 1;
-    return Math.round(distanceInKm * rate * passangers);
+    return Math.round(distanceInKm * rate * passengers);
   };
 
   const handleBooking = async () => {
@@ -160,7 +160,7 @@ const BookTrain = () => {
       journeyDate: dateOfBooking || new Date().toISOString(),
       coachClass: selectedCoach,
       totalFare: getPricePerPerson(selectedCoach, trainData?.totalDistance, passengers.length),
-      passangers: passengers.map(p => ({
+      passengers: passengers.map(p => ({
         name: p.name,
         age: Number(p.age),
         gender: p.gender

@@ -4,16 +4,16 @@ using Core.Entities;
 
 namespace Infrastructure.Services;
 
-public class EmailNotificationService(IEmailService emailService):IEmailNotificationService
+public class EmailNotificationService(IEmailService emailService) : IEmailNotificationService
 {
     public async Task SendBookingConfirmationAsync(PassengerBookingInfoDTO bookingInfo, Booking completeBooking)
     {
 
         // ✅ Send booking confirmation email
-            string subject = $"Booking Confirmation - PNR {bookingInfo.PNR}";
-            bool hasWaiting = bookingInfo.Passengers.Any(p => p.BookingStatus == "WAITING" || p.BookingStatus == "RAC");
+        string subject = $"Booking Confirmation - PNR {bookingInfo.PNR}";
+        bool hasWaiting = bookingInfo.Passengers.Any(p => p.BookingStatus == "WAITING" || p.BookingStatus == "RAC");
 
-            string body = $"""
+        string body = $"""
             <html>
             <body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; padding:20px;">
             <div style="max-width:600px; margin:0 auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
@@ -67,21 +67,26 @@ public class EmailNotificationService(IEmailService emailService):IEmailNotifica
         """;
 
 
-        await emailService.SendEmailAsync(completeBooking.User.Email, subject, body);
+        var toEmail = completeBooking.User?.Email;
+        if (string.IsNullOrWhiteSpace(toEmail))
+        {
+            return; // No recipient; skip sending
+        }
+        await emailService.SendEmailAsync(toEmail, subject, body);
     }
     public async Task SendBookingCancellationAsync(Booking booking, List<Passenger> cancelledPassengers, decimal refundAmount)
     {
-            var passengerRows = string.Join
-            ("", cancelledPassengers.Select(p => $@"
+        var passengerRows = string.Join
+        ("", cancelledPassengers.Select(p => $@"
                 <tr>
                     <td style='padding:8px;border:1px solid #ddd'>{p.Name}</td>
                     <td style='padding:8px;border:1px solid #ddd'>{p.Age}</td>
                     <td style='padding:8px;border:1px solid #ddd'>{p.Gender}</td>
                     <td style='padding:8px;border:1px solid #ddd'>{p.Status}</td>
                 </tr>"
-            ));
+        ));
 
-    var htmlMessage= $@"
+        var htmlMessage = $@"
     <html>
         <body style='font-family:Arial, sans-serif;line-height:1.6;color:#333'>
             <div style='max-width:600px;margin:auto;padding:20px;border:1px solid #eee;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1)'>
@@ -115,11 +120,15 @@ public class EmailNotificationService(IEmailService emailService):IEmailNotifica
             </div>
         </body>
     </html>";
-    await emailService.SendEmailAsync(
-        booking.User.Email,
-        "Booking Cancellation Confirmation",
-        htmlMessage
-    );
+        var cancelToEmail = booking.User?.Email;
+        if (!string.IsNullOrWhiteSpace(cancelToEmail))
+        {
+            await emailService.SendEmailAsync(
+                cancelToEmail,
+                "Booking Cancellation Confirmation",
+                htmlMessage
+            );
+        }
     }
     public async Task SendWaitlistPromotionEmailAsync(Passenger passenger)
     {
@@ -147,7 +156,11 @@ public class EmailNotificationService(IEmailService emailService):IEmailNotifica
         </body>
         </html>";
 
-        await emailService.SendEmailAsync(booking.User.Email, subject, body);
+        var promoToEmail = booking.User?.Email;
+        if (!string.IsNullOrWhiteSpace(promoToEmail))
+        {
+            await emailService.SendEmailAsync(promoToEmail, subject, body);
+        }
     }
 
 }
