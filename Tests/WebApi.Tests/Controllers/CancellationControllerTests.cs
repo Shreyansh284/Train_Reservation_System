@@ -35,7 +35,7 @@ namespace WebApi.Tests.Controllers
             
             _senderMock
                 .Setup(x => x.Send(It.Is<BookingCancellationCommand>(cmd => 
-                    cmd.cancellationRequest == cancellationRequest), 
+                    cmd.CancellationRequest == cancellationRequest), 
                     It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
@@ -49,7 +49,7 @@ namespace WebApi.Tests.Controllers
             // Verify the command was sent with correct parameters
             _senderMock.Verify(
                 x => x.Send(
-                    It.Is<BookingCancellationCommand>(cmd => cmd.cancellationRequest == cancellationRequest),
+                    It.Is<BookingCancellationCommand>(cmd => cmd.CancellationRequest == cancellationRequest),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }

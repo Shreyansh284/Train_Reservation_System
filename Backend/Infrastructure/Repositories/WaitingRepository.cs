@@ -25,7 +25,8 @@ public class WaitingRepository(AppDbContext context):IWaitingRepository
         return await context.TrainWaitlists
             .Where(w => w.TrainId == trainId
                         && w.CoachClass == parsedCoachClass
-                        && w.JourneyDate == bookingDate)
+                        && w.JourneyDate == bookingDate
+                        && w.Status==BookingStatus.Waiting)
             .ToListAsync();
     }
 

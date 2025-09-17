@@ -50,10 +50,10 @@ namespace WebApi.Tests.Controllers
         {
             var train = _fixture.Create<DisplayTrainDTO>();
             int trainId =_fixture.Create<int>();
-            _senderMock.Setup(s => s.Send(It.Is<GetTrainByNumberQuery>(q => q.trainId == trainId), It.IsAny<CancellationToken>()))
+            _senderMock.Setup(s => s.Send(It.Is<GetTrainByIdQuery>(q => q.trainId == trainId), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(train);
 
-            var result = await _controller.GetTrainByNumber(trainId);
+            var result = await _controller.GetTrainById(trainId);
 
             var okResult = result as OkObjectResult;
             okResult.Should().NotBeNull();
@@ -265,11 +265,11 @@ namespace WebApi.Tests.Controllers
             // Arrange
             var trainId = _fixture.Create<int>();
             var train = _fixture.Create<DisplayTrainDTO>();
-            _senderMock.Setup(s => s.Send(It.IsAny<GetTrainByNumberQuery>(), It.IsAny<CancellationToken>()))
+            _senderMock.Setup(s => s.Send(It.IsAny<GetTrainByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(train);
     
             // Act
-            var result = await _controller.GetTrainByNumber(trainId);
+            var result = await _controller.GetTrainById(trainId);
     
             // Assert
             var okResult = result as OkObjectResult;

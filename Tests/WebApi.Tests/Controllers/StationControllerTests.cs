@@ -38,7 +38,7 @@ namespace WebApi.Tests.Controllers
             var expectedStations = _fixture.CreateMany<DisplayStationDTO>(3).ToList();
             
             _senderMock.Setup(x => x.Send(
-                It.Is<GetStationCommand>(cmd => cmd.query == query),
+                It.Is<GetStationCommand>(cmd => cmd.StationName == query),
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedStations);
 
@@ -52,7 +52,7 @@ namespace WebApi.Tests.Controllers
             
             _senderMock.Verify(
                 x => x.Send(
-                    It.Is<GetStationCommand>(cmd => cmd.query == query),
+                    It.Is<GetStationCommand>(cmd => cmd.StationName == query),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }

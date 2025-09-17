@@ -44,7 +44,7 @@ public class TrainRepository(AppDbContext context):ITrainRepository
 
     public async Task UpdateTrain(Train train)
     {
-         context.Trains.Update(train);
+        context.Trains.Update(train);
     }
     public async Task<List<Train>> GetTrainsBetweenStationsAsync(int fromStationId, int toStationId)
     {

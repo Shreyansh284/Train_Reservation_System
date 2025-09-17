@@ -76,7 +76,7 @@ namespace WebApi.Tests.Controllers
             var expectedBooking = _fixture.Create<PassengerBookingInfoDTO>();
 
             _senderMock.Setup(x => x.Send(It.Is<GetTicketByPNRQuery>(q => 
-                q.pnr == pnr), It.IsAny<CancellationToken>()))
+                q.PNR == pnr), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedBooking);
 
             // Act
@@ -95,7 +95,7 @@ namespace WebApi.Tests.Controllers
             var pnr = _fixture.Create<long>();
 
             _senderMock.Setup(x => x.Send(It.Is<GetTicketByPNRQuery>(q => 
-                q.pnr == pnr), It.IsAny<CancellationToken>()))
+                q.PNR== pnr), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((PassengerBookingInfoDTO)null);
 
             // Act

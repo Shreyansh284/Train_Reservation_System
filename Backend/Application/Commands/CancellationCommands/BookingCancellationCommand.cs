@@ -44,13 +44,9 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
             {
                 throw new NotFoundException("Passenger not found");
             }
-            decimal refund = 0;
+            decimal refund = (booking.TotalFare / booking.Passengers.Count)* cancelPassengers.Count;
+            cancelPassengers.ForEach(p => p.Status = BookingStatus.Cancelled);
 
-            foreach (var passenger in cancelPassengers)
-            {
-                passenger.Status = BookingStatus.Cancelled;
-                refund += booking.TotalFare / booking.Passengers.Count;
-            }
             var cancellation = new Cancellation
             {
                 BookingId = booking.BookingId,
@@ -69,47 +65,96 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
             _bookingLock.Release();
         }
     }
-    private async Task TryPromoteWaitlistedPassengersAsync(List<Passenger> cancelledPassengers)
+    //find confirmedseat and check them also if they confilit by waitlist
+    public  async Task TryPromoteWaitlistedPassengersAsync(List<Passenger> cancelledPassengers)
     {
         foreach (var cancelled in cancelledPassengers)
         {
             if (cancelled.SeatId == null) continue;
 
-            var waitlist = await waitingRepository.GetWaitlistedPassengerOfTrainByCoachClassAndDate(cancelled.Booking.TrainId, cancelled.Booking.JourneyDate, cancelled.CoachClass.ToString());
+            var waitlist = await waitingRepository.GetWaitlistedPassengerOfTrainByCoachClassAndDate(
+                                    cancelled.Booking.TrainId,
+                                    cancelled.Booking.JourneyDate,
+                                    cancelled.CoachClass.ToString());
 
-            var trainScheduleStations = await trainScheduleRepository.GetTrainSchedulesByCoachIdAsync(cancelled.Seat.CoachId);
-            var fromStation = trainScheduleStations.FirstOrDefault(s => s.StationId == cancelled.Booking.FromStationId);
-            var toStation = trainScheduleStations.FirstOrDefault(s => s.StationId == cancelled.Booking.ToStationId);
-            foreach (var wait in waitlist)
+            var trainScheduleStations = await GetTrainScheduleStationsAsync(cancelled);
+            var confirmedOnSeat = GetConfirmedPassengersOnSeat(cancelled);
+
+            await TryPromoteOneFromWaitlist(cancelled, waitlist, trainScheduleStations, confirmedOnSeat);
+        }
+    }
+
+    private async Task<List<TrainSchedule>> GetTrainScheduleStationsAsync(Passenger cancelled)
+    {
+        return await trainScheduleRepository.GetTrainSchedulesByCoachIdAsync(cancelled.Seat.CoachId);
+    }
+
+    private List<Passenger> GetConfirmedPassengersOnSeat(Passenger cancelled)
+    {
+        return cancelled.Booking.Passengers
+            .Where(p => p.Status == BookingStatus.Confirmed && p.SeatId == cancelled.SeatId)
+            .ToList();
+    }
+
+    private async Task TryPromoteOneFromWaitlist(
+        Passenger cancelled,
+        IEnumerable<TrainWaitlist> waitlist,
+        List<TrainSchedule> trainScheduleStations,
+        List<Passenger> confirmedOnSeat)
+    {
+        foreach (var wait in waitlist)
+        {
+            if (!DoesOverlapWithConfirmed(wait, confirmedOnSeat, trainScheduleStations))
             {
-                var waitToStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.ToStationId);
-                var waitFromStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.FromStationId);
-
-                if (IsOverlapping(fromStation.DistanceFromSource, toStation.DistanceFromSource, waitFromStation.DistanceFromSource, waitToStation.DistanceFromSource))
-                    continue;
-
-                // Update waitlisted passenger
-                var passenger = await passengerRepository.GetPassengerById(wait.PassengerId);
-                passenger.SeatId = cancelled.SeatId;
-                passenger.Status = BookingStatus.Confirmed;
-                passenger.CoachClass = cancelled.CoachClass;
-
-                waitingRepository.DeleteWaitlistEntryAsync(wait);
-                await unitOfWork.SaveChangesAsync();
-
-                await emailNotificationService.SendWaitlistPromotionEmailAsync(passenger);
-
-                break; // 1 seat = 1 passenger
+                await PromotePassengerAsync(wait, cancelled);
+                break; // one waitlisted passenger promoted per seat
             }
         }
+    }
+
+    private bool DoesOverlapWithConfirmed(
+        TrainWaitlist wait,
+        List<Passenger> confirmedOnSeat,
+        List<TrainSchedule> trainScheduleStations)
+    {
+        var waitFromStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.Booking.FromStationId);
+        var waitToStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.Booking.ToStationId);
+
+        foreach (var confirmed in confirmedOnSeat)
+        {
+            var confFrom = trainScheduleStations.FirstOrDefault(s => s.StationId == confirmed.Booking.FromStationId);
+            var confTo = trainScheduleStations.FirstOrDefault(s => s.StationId == confirmed.Booking.ToStationId);
+
+            if (IsOverlapping(
+                    waitFromStation.DistanceFromSource,
+                    waitToStation.DistanceFromSource,
+                    confFrom.DistanceFromSource,
+                    confTo.DistanceFromSource))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private async Task PromotePassengerAsync(TrainWaitlist wait, Passenger cancelled)
+    {
+        var passenger = await passengerRepository.GetPassengerById(wait.PassengerId);
+        passenger.SeatId = cancelled.SeatId;
+        passenger.Status = BookingStatus.Confirmed;
+        passenger.CoachClass = cancelled.CoachClass;
+
+        wait.Status = BookingStatus.Confirmed;
 
         await unitOfWork.SaveChangesAsync();
+        await emailNotificationService.SendWaitlistPromotionEmailAsync(passenger);
     }
 
     private bool IsOverlapping(int from1, int to1, int from2, int to2)
     {
         return !(to2 <= from1 || from2 >= to1 || (from1 == from2 && to1 == to2));
     }
+
 
 
 }
