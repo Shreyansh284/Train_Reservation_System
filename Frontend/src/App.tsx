@@ -30,9 +30,9 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   return (
     <Suspense fallback={<Loading className="min-h-screen" />}>
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
         <Navigation />
-        <main className="flex-1 container mx-auto px-4 py-4 md:py-6">
+  <main className="flex-1 container mx-auto px-3 sm:px-4 py-4 md:py-6">
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />

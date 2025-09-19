@@ -167,8 +167,8 @@ const BookingReport: React.FC = () => {
     }
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
+    <div className="space-y-6">
+            <div className="flex justify-between items-center gap-3 flex-wrap">
                 <div>
                     <h1 className="text-3xl font-bold">Booking Report</h1>
                     <p className="text-muted-foreground">
@@ -212,7 +212,7 @@ const BookingReport: React.FC = () => {
                         <CardTitle className="text-sm font-medium">Confirmed Seats</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-600">{totalConfirmedSeats}</div>
+                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">{totalConfirmedSeats}</div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -220,7 +220,7 @@ const BookingReport: React.FC = () => {
                         <CardTitle className="text-sm font-medium">Waiting Seats</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-yellow-600">{totalWaitingSeats}</div>
+                        <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{totalWaitingSeats}</div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -228,7 +228,7 @@ const BookingReport: React.FC = () => {
                         <CardTitle className="text-sm font-medium">Cancelled Seats</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-red-600">{totalCancelledSeats}</div>
+                        <div className="text-2xl font-bold text-red-600 dark:text-red-400">{totalCancelledSeats}</div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -236,7 +236,7 @@ const BookingReport: React.FC = () => {
                         <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-blue-600">₹{totalRevenue.toLocaleString()}</div>
+                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">₹{totalRevenue.toLocaleString()}</div>
                     </CardContent>
                 </Card>
             </div>
@@ -299,7 +299,7 @@ const BookingReport: React.FC = () => {
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="h-auto p-1 font-semibold hover:bg-gray-100 flex items-center gap-1"
+                                        className="h-auto p-1 font-semibold hover:bg-muted flex items-center gap-1"
                                         onClick={() => handleSort('pnr')}
                                     >
                                         PNR {getSortIcon('pnr')}
@@ -310,7 +310,7 @@ const BookingReport: React.FC = () => {
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="h-auto p-1 font-semibold hover:bg-gray-100 flex items-center gap-1"
+                                        className="h-auto p-1 font-semibold hover:bg-muted flex items-center gap-1"
                                         onClick={() => handleSort('trainNumber')}
                                     >
                                         Train {getSortIcon('trainNumber')}
@@ -321,7 +321,7 @@ const BookingReport: React.FC = () => {
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="h-auto p-1 font-semibold hover:bg-gray-100 flex items-center gap-1"
+                                        className="h-auto p-1 font-semibold hover:bg-muted flex items-center gap-1"
                                         onClick={() => handleSort('journeyDate')}
                                     >
                                         Journey Date {getSortIcon('journeyDate')}

@@ -193,8 +193,8 @@ const AdminAddTrain = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/50">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
         <Card className="mb-8 bg-gradient-card shadow-elevated">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">

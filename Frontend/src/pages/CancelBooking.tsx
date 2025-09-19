@@ -216,7 +216,7 @@ const CancelBooking = () => {
             </Card>
 
             {/* Passenger Selection */}
-            <Card className="bg-gradient-to-br from-white via-blue-30 to-orange-40  border-2 border-primary/10 shadow-lg">
+            <Card className="bg-gradient-card shadow-elevated border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Users className="h-5 w-5 text-primary" />
@@ -259,13 +259,13 @@ const CancelBooking = () => {
                             <div className="text-right">
                               <Badge
                                 variant="outline"
-                                className="bg-gradient-to-r from-blue-100 to-orange-100 text-primary border-none shadow"
+                                className="bg-secondary text-secondary-foreground border-none shadow"
                               >
                                 {passenger.seatNumber}
                               </Badge>
                               <p className={`text-xs mt-1 font-medium ${passenger.bookingStatus === "Cancelled"
-                                ? "text-red-500"
-                                : "text-green-600"
+                                ? "text-destructive"
+                                : "text-green-600 dark:text-green-400"
                                 }`}>
                                 {passenger.bookingStatus}
                               </p>

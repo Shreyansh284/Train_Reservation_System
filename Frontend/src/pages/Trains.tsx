@@ -115,7 +115,7 @@ const CoachDetailsModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
 
 
     return (
-        <DialogContent className="max-w-4xl max-h-[80vh]">
+        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh]">
             <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                     <Train className="h-5 w-5" />
@@ -123,7 +123,7 @@ const CoachDetailsModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
                 </DialogTitle>
             </DialogHeader>
 
-            <div className="max-h-[70vh] overflow-y-auto pr-2 space-y-6">
+            <div className="max-h-[75vh] overflow-y-auto pr-2 space-y-6">
                 {/* Realistic Train Visual Layout */}
                 <div className="bg-card p-6 rounded-lg shadow-sm">
                     <h3 className="font-semibold mb-4 flex items-center gap-2">
@@ -261,7 +261,7 @@ const StationRouteModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
     };
 
     return (
-        <DialogContent className="max-w-3xl max-h-[80vh]">
+        <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh]">
             <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                     <Route className="h-5 w-5" />
@@ -269,7 +269,7 @@ const StationRouteModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
                 </DialogTitle>
             </DialogHeader>
 
-            <div className="max-h-[60vh] overflow-y-auto pr-2 space-y-6">
+            <div className="max-h-[75vh] overflow-y-auto pr-2 space-y-6">
                 {/* Route Overview */}
                 <Card className="bg-secondary">
                     <CardContent className="p-4">

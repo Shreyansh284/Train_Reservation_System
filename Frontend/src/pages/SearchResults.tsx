@@ -66,7 +66,7 @@ const SearchResults = () => {
         <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 pb-16">
             {/* Sticky header */}
             <div className="backdrop-blur bg-background/80 border-b border-border sticky top-0 z-40">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+                <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-2 text-base font-medium">
                         <MapPin className="h-4 w-4 text-primary" />
                         <span className="capitalize">{fromStation}</span>
