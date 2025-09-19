@@ -94,7 +94,7 @@ const PNRStatus = () => {
                 <Label htmlFor="pnr">PNR Number</Label>
                 <Input
                   id="pnr"
-                  placeholder="Enter 10-digit PNR number"
+                  placeholder="Enter 7-digit PNR number"
                   value={pnr}
                   onChange={(e) => setPnr(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}

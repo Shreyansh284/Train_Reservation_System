@@ -15,7 +15,7 @@ const CancelBooking = () => {
   const { toast } = useToast();
   const [pnrNumber, setPnrNumber] = useState<number | null>(null);
   const [searchResults, setSearchResults] = useState<any>(null);
-  const [selectedPassengers, setSelectedPassengers] = useState<Number[]>([]);
+  const [selectedPassengers, setSelectedPassengers] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +39,7 @@ const CancelBooking = () => {
     }
   };
 
-  const handlePassengerSelection = (passengerId: Number, checked: boolean) => {
+  const handlePassengerSelection = (passengerId: number, checked: boolean) => {
     setSelectedPassengers(prev =>
       checked
         ? [...prev, passengerId]
@@ -57,7 +57,7 @@ const CancelBooking = () => {
     return (perPassengerAmount - cancellationFee) * selectedCount;
   };
 
-  const handleCancellation = async() => {
+  const handleCancellation = async () => {
     if (selectedPassengers.length === 0) {
       toast({
         title: "Error",
@@ -75,7 +75,23 @@ const CancelBooking = () => {
       };
       console.log(cancellationRequest)
       const refundAmount = calculateRefund();
-      
+
+      // Optimistic UI update: mark selected passengers as Cancelled
+      const previousResults = searchResults;
+      if (previousResults) {
+        const updatedPassengers = previousResults.passengers.map((p: any) =>
+          selectedPassengers.includes(p.passengerId)
+            ? { ...p, bookingStatus: "Cancelled" }
+            : p
+        );
+        const allCancelled = updatedPassengers.every((p: any) => p.bookingStatus === "Cancelled");
+        setSearchResults({
+          ...previousResults,
+          passengers: updatedPassengers,
+          bookingStatus: allCancelled ? "Cancelled" : previousResults.bookingStatus,
+        });
+      }
+
       // Make the API call
       await cancelBooking(cancellationRequest);
 
@@ -86,12 +102,12 @@ const CancelBooking = () => {
         variant: "default"
       });
 
-      // Reset form
-      setSearchResults(null);
+      // Clear selection but keep results visible with updated statuses
       setSelectedPassengers([]);
-      setPnrNumber(null);
 
     } catch (error) {
+      // Rollback optimistic update on error
+      await handleSearch();
       // Error toast will be shown by the apiClient interceptor
       console.error("Cancellation error:", error);
     } finally {
@@ -164,7 +180,7 @@ const CancelBooking = () => {
                     <span>Booking Details</span>
                   </div>
                   <Badge
-                    variant={searchResults.bookingStatus === "Confirmed" ? "default" : "secondary"}
+                    variant={searchResults.bookingStatus === "Cancelled" ? "secondary" : "default"}
                     className="bg-accent text-accent-foreground"
                   >
                     {searchResults.bookingStatus}
@@ -179,7 +195,7 @@ const CancelBooking = () => {
                       <Train className="h-4 w-4 mr-2 text-muted-foreground" />
                       {searchResults.trainName}
                     </p>
-                    {/* <p className="text-sm text-muted-foreground">#{searchResults.train.number}</p> */}
+                    {/* <p className="text-sm text-muted-foreground">#{searchResults.trainNumber}</p> */}
                   </div>
                   <div>
 
@@ -209,49 +225,51 @@ const CancelBooking = () => {
               </CardHeader>
               <CardContent>
                 <div
-                  className={`space-y-3 ${searchResults.passengers.length > 5
-                      ? "max-h-96 overflow-y-auto pr-2 custom-scrollbar"
-                      : ""
+                  className={`grid grid-cols-12 gap-3 ${searchResults.passengers.length > 5
+                    ? "max-h-96 overflow-y-auto pr-2 custom-scrollbar"
+                    : ""
                     }`}
                 >
                   {searchResults.passengers.map((passenger: any) => (
-                    <div
-                      key={passenger.passengerId}
-                      className={`flex items-center space-x-3 p-4 border-2 rounded-xl bg-white/90 shadow-sm
-                        ${selectedPassengers.includes(passenger.passengerId)
-                          ? "border-primary/60 ring-2 ring-primary/20"
-                          : "border-muted/30"}
-                          ${passenger.bookingStatus === "Cancelled" ? "cursor-not-allowed opacity-70" : ""}
-                        hover:border-primary/40`}
-                    >
-                      <Checkbox
-                        id={passenger.passengerId}
-                        checked={selectedPassengers.includes(passenger.passengerId)}
-                        disabled={passenger.bookingStatus == "Cancelled"}
-                        onCheckedChange={(checked) => handlePassengerSelection(passenger.passengerId, checked as boolean)}
-                        className={`scale-125 accent-primary`}
-                      />
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-semibold text-base text-primary">{passenger.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {passenger.age} years • {passenger.gender}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <Badge
-                              variant="outline"
-                              className="bg-gradient-to-r from-blue-100 to-orange-100 text-primary border-none shadow"
-                            >
-                              {passenger.seatNumber}
-                            </Badge>
-                            <p className={`text-xs mt-1 font-medium ${passenger.bookingStatus === "Cancelled"
+                    <div key={passenger.passengerId} className="col-span-12 md:col-span-6">
+                      <div
+                        className={`flex items-center space-x-3 p-4 border-2 rounded-xl bg-white/90 shadow-sm
+                          ${selectedPassengers.includes(passenger.passengerId)
+                            ? "border-primary/60 ring-2 ring-primary/20"
+                            : "border-muted/30"}
+                            ${passenger.bookingStatus === "Cancelled" ? "cursor-not-allowed opacity-70" : ""}
+                          hover:border-primary/40`}
+                      >
+                        {passenger.bookingStatus !== "Cancelled" && (
+                          <Checkbox
+                            id={passenger.passengerId}
+                            checked={selectedPassengers.includes(passenger.passengerId)}
+                            onCheckedChange={(checked) => handlePassengerSelection(passenger.passengerId, checked as boolean)}
+                            className={`scale-125 accent-primary`}
+                          />
+                        )}
+                        <div className="flex-1">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold text-base text-primary">{passenger.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {passenger.age} years • {passenger.gender}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <Badge
+                                variant="outline"
+                                className="bg-gradient-to-r from-blue-100 to-orange-100 text-primary border-none shadow"
+                              >
+                                {passenger.seatNumber}
+                              </Badge>
+                              <p className={`text-xs mt-1 font-medium ${passenger.bookingStatus === "Cancelled"
                                 ? "text-red-500"
                                 : "text-green-600"
-                              }`}>
-                              {passenger.bookingStatus}
-                            </p>
+                                }`}>
+                                {passenger.bookingStatus}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -282,13 +300,13 @@ const CancelBooking = () => {
                       <span>₹{searchResults.totalFare}</span>
                     </div>
                     <div className="flex justify-between text-red-600">
-                      <span>Cancellation charges (20%):</span>
+                      <span>Cancellation charges (0%):</span>
                       <span>
                         -₹
                         {(
                           ((searchResults.totalFare / searchResults.passengers.length) *
                             selectedPassengers.length) *
-                          0.2
+                          0.0
                         ).toFixed(2)}
                       </span>
                     </div>
@@ -305,18 +323,18 @@ const CancelBooking = () => {
                       className="mt-6"
                       disabled={selectedPassengers.length === 0 || isCancelling}
                     >
-                        {isCancelling ? (
-                          <>
-                            <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
-                            Cancelling...
-                          </>
-                        ) : (
-                          <>
-                            <AlertTriangle className="mr-2 h-5 w-5" />
-                            Confirm Cancellation
-                          </>
-                        )}
-                      </Button>
+                      {isCancelling ? (
+                        <>
+                          <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
+                          Cancelling...
+                        </>
+                      ) : (
+                        <>
+                          <AlertTriangle className="mr-2 h-5 w-5" />
+                          Confirm Cancellation
+                        </>
+                      )}
+                    </Button>
                   </div>
                   {/* Important Notes at right on desktop */}
                   <div className="md:w-1/2 w-full">

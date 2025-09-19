@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/components/ui/use-toast';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -20,6 +21,8 @@ export default function Login() {
     try {
       const success = await login(email, password);
       if (success) {
+        // Show success toast
+        toast({ title: 'Success', description: 'Logged in successfully.' });
         // Check for redirect in location state (can be either a string or Location object)
         const from = location.state?.from;
         if (typeof from === 'string') {
@@ -35,7 +38,13 @@ export default function Login() {
         }
       }
     } catch (error) {
-      // Error is already shown via toast from apiClient
+      // For 401 (invalid credentials), the global interceptor suppresses the toast,
+      // so show the backend message here. Other errors are already toasted globally.
+      const err = error as { status?: number; message?: string; data?: unknown };
+      if (err?.status === 401) {
+        const backendMsg = typeof err?.data === 'string' ? err.data : err?.message || 'Invalid credentials';
+        toast({ title: 'Login failed', description: backendMsg, variant: 'destructive' });
+      }
       // Just log for debugging
       console.error('Login error:', error);
     } finally {

@@ -117,8 +117,8 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
         List<Passenger> confirmedOnSeat,
         List<TrainSchedule> trainScheduleStations)
     {
-        var waitFromStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.Booking.FromStationId);
-        var waitToStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.Booking.ToStationId);
+        var waitFromStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.FromStationId);
+        var waitToStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.ToStationId);
 
         foreach (var confirmed in confirmedOnSeat)
         {

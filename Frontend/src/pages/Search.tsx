@@ -275,7 +275,7 @@ const Search = () => {
                   {loading ? (
                     <div className="flex flex-col items-center justify-center my-12 space-y-4">
                       <Loading size={40} />
-                      <p className="text-muted-foreground text-sm">Fetching booking details...</p>
+                      
                     </div>
                   ) : (
                     <>
