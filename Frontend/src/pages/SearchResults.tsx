@@ -3,9 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { searchTrains } from "@/lib/api";
 import { Loading } from "@/components/ui/loading";
 import TrainResults from "@/components/TrainResults";
-import { ArrowRight, Calendar as CalendarIcon, MapPin, Loader2 } from "lucide-react";
+import { ArrowRight, Calendar as CalendarIcon, MapPin } from "lucide-react";
 import { format, parseISO } from "date-fns";
-import { Button } from "react-day-picker";
+import { Button } from "@/components/ui/button";
 import { TrainLoader } from "@/components/ui/TrainLoader";
 
 interface LocationState {
@@ -25,7 +25,7 @@ const SearchResults = () => {
         date,
         fromStation,
         toStation,
-// Default distance if not provided
+        // Default distance if not provided
     } = (state || {}) as LocationState;
 
     const [loading, setLoading] = useState(true);
@@ -76,14 +76,14 @@ const SearchResults = () => {
                         <CalendarIcon className="h-4 w-4 text-primary" />
                         <span>{readableDate}</span>
                     </div>
-                    {/* <Button variant="secondary" size="sm" onClick={() => navigate(-1)}>
+                    <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
                         Back
-                    </Button> */}
+                    </Button>
                 </div>
             </div>
 
             <div className="container mx-auto px-4 pt-6">
-              
+
                 <TrainResults
                     trains={results}
                     fromStation={fromStation}

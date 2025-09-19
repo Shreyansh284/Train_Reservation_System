@@ -12,7 +12,7 @@ interface TrainResultsProps {
     toStationId: number;
     onBook: (trainId: number, fromStationId: number, toStationId: number) => void;
 }
-const calculatePrice = (coachType: string, distance: number ) => {
+const calculatePrice = (coachType: string, distance: number) => {
     // Base prices per km for different coach types
     const basePrices: Record<string, number> = {
         'A1': 4,
@@ -38,19 +38,22 @@ const formatTime = (timeString: string) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
-// Helper function to get train type color
+// Helper: themed color classes for train type badges (light + dark)
 const getTrainTypeColor = (type: string) => {
-    const typeLower = type.toLowerCase();
-    if (typeLower.includes('rajdhani') || typeLower.includes('shatabdi') || typeLower.includes('vande bharat')) {
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-    } else if (typeLower.includes('duronto') || typeLower.includes('garib rath')) {
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-    } else if (typeLower.includes('shatabdi') || typeLower.includes('jan shatabdi')) {
-        return 'bg-green-100 text-green-800 border-green-200';
-    } else if (typeLower.includes('express')) {
-        return 'bg-orange-100 text-orange-800 border-orange-200';
+    const t = type.toLowerCase();
+    if (t.includes('rajdhani') || t.includes('shatabdi') || t.includes('vande bharat')) {
+        return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800';
     }
-    return 'bg-gray-100 text-gray-800 border-gray-200';
+    if (t.includes('duronto') || t.includes('garib rath')) {
+        return 'bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:border-violet-800';
+    }
+    if (t.includes('jan shatabdi')) {
+        return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800';
+    }
+    if (t.includes('express')) {
+        return 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800';
+    }
+    return 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800/40 dark:text-gray-300 dark:border-gray-700';
 };
 
 const TrainResults: React.FC<TrainResultsProps> = ({
@@ -197,8 +200,8 @@ const TrainResults: React.FC<TrainResultsProps> = ({
                                             className={cn(
                                                 "flex flex-col p-3 rounded-lg border transition-all duration-300",
                                                 coach.availableSeats > 0
-                                                    ? "bg-green-50 border-green-200 hover:bg-green-100/50 cursor-pointer hover:shadow-md"
-                                                    : "bg-muted/30 border-muted"
+                                                    ? "bg-green-50 border-green-200 hover:bg-green-100/50 cursor-pointer hover:shadow-md dark:bg-green-900/30 dark:border-green-800 dark:hover:bg-green-900/50"
+                                                    : "bg-muted/30 border-border"
                                             )}
                                         >
                                             <div className="flex justify-between items-start">
@@ -209,7 +212,7 @@ const TrainResults: React.FC<TrainResultsProps> = ({
                                                     </div>
                                                 </div>
                                                 {coach.availableSeats > 0 && (
-                                                    <span className="text-xs px-2 py-0.5 rounded-md bg-green-200 text-green-700 border border-green-500 hover:bg-green-100">
+                                                    <span className="text-xs px-2 py-0.5 rounded-md bg-green-200 text-green-700 border border-green-500 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700 dark:hover:bg-green-900/50">
                                                         {coach.availableSeats} Available seats
                                                     </span>
                                                 )}
