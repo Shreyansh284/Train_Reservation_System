@@ -424,11 +424,11 @@ const AdminAddTrain = () => {
               )}
             </div>
             {loading && (
-                     <div className="flex flex-col items-center justify-center my-12 space-y-4">
-                       <TrainLoader size={40} />
-                       <p className="text-muted-foreground text-sm">Adding train...</p>
-                     </div>
-                   )}
+              <div className="flex flex-col items-center justify-center my-12 space-y-4">
+                <TrainLoader size={40} />
+                <p className="text-muted-foreground text-sm">Adding train...</p>
+              </div>
+            )}
             {error && <div className="text-red-500">{error}</div>}
           </CardContent>
         </Card>

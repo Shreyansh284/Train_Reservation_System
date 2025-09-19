@@ -167,7 +167,7 @@ const BookingReport: React.FC = () => {
     }
 
     return (
-    <div className="space-y-6">
+        <div className="space-y-6">
             <div className="flex justify-between items-center gap-3 flex-wrap">
                 <div>
                     <h1 className="text-3xl font-bold">Booking Report</h1>

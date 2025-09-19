@@ -26,13 +26,14 @@ const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 
 const queryClient = new QueryClient();
+const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 
 const AppContent = () => {
   return (
     <Suspense fallback={<Loading className="min-h-screen" />}>
       <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
         <Navigation />
-  <main className="flex-1 container mx-auto px-3 sm:px-4 py-4 md:py-6">
+        <main className="flex-1 container mx-auto px-3 sm:px-4 py-4 md:py-6">
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
@@ -89,21 +90,23 @@ const AppContent = () => {
                 </Suspense>
               </ProtectedRoute>
             }>
-              <Route path="/admin/add-train" element={
-                <Suspense fallback={<Loading className="min-h-[60vh]" />}>
-                  <AdminAddTrain />
-                </Suspense>
-              } />
-              <Route path="/admin/booking-report" element={
-                <Suspense fallback={<Loading className="min-h-[60vh]" />}>
-                  <BookingReport />
-                </Suspense>
-              } />
-              <Route path="/admin/trains" element={
-                <Suspense fallback={<Loading className="min-h-[60vh]" />}>
-                  <Trains />
-                </Suspense>
-              } />
+              <Route element={<Suspense fallback={<Loading className="min-h-[60vh]" />}><AdminLayout><Outlet /></AdminLayout></Suspense>}>
+                <Route path="/admin/add-train" element={
+                  <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                    <AdminAddTrain />
+                  </Suspense>
+                } />
+                <Route path="/admin/booking-report" element={
+                  <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                    <BookingReport />
+                  </Suspense>
+                } />
+                <Route path="/admin/trains" element={
+                  <Suspense fallback={<Loading className="min-h-[60vh]" />}>
+                    <Trains />
+                  </Suspense>
+                } />
+              </Route>
             </Route>
 
             {/* 404 - Keep at the bottom */}
