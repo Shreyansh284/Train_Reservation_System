@@ -12,17 +12,17 @@ const Index = () => {
           <div className="text-center max-w-4xl mx-auto">
             <div className="flex justify-center mb-6">
               <div className="bg-gradient-hero p-4 rounded-full shadow-elevated">
-                <Train className="h-12 w-12 text-white" />
+                <Train className="h-12 w-12 text-primary-foreground" />
               </div>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-hero bg-clip-text text-transparent">
               RailReserve System
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Your comprehensive train reservation platform. Search trains, book tickets, 
+              Your comprehensive train reservation platform. Search trains, book tickets,
               and manage your journey with ease.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/search">
                 <Button variant="railway" size="lg" className="w-full sm:w-auto">
@@ -44,7 +44,7 @@ const Index = () => {
       {/* Features Section */}
       <div className="container mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold text-center mb-12">System Features</h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* User Features */}
           <Card className="bg-gradient-card shadow-card hover:shadow-elevated transition-all duration-300">
@@ -159,7 +159,7 @@ const Index = () => {
             <h2 className="text-3xl font-bold mb-8">Get Started</h2>
             <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-2xl mx-auto">
               <Link to="/search" className="flex-1">
-                <Card className="cursor-pointer hover:shadow-elevated transition-all duration-300 bg-white">
+                <Card className="cursor-pointer hover:shadow-elevated transition-all duration-300 bg-card text-card-foreground">
                   <CardContent className="p-6 text-center">
                     <Search className="h-8 w-8 text-primary mx-auto mb-3" />
                     <h3 className="font-semibold mb-2">Book a Ticket</h3>
@@ -169,9 +169,9 @@ const Index = () => {
                   </CardContent>
                 </Card>
               </Link>
-              
+
               <Link to="/cancel" className="flex-1">
-                <Card className="cursor-pointer hover:shadow-elevated transition-all duration-300 bg-white">
+                <Card className="cursor-pointer hover:shadow-elevated transition-all duration-300 bg-card text-card-foreground">
                   <CardContent className="p-6 text-center">
                     <Shield className="h-8 w-8 text-primary mx-auto mb-3" />
                     <h3 className="font-semibold mb-2">Cancel Booking</h3>
@@ -183,7 +183,7 @@ const Index = () => {
               </Link>
 
               <Link to="/admin/add-train" className="flex-1">
-                <Card className="cursor-pointer hover:shadow-elevated transition-all duration-300 bg-white">
+                <Card className="cursor-pointer hover:shadow-elevated transition-all duration-300 bg-card text-card-foreground">
                   <CardContent className="p-6 text-center">
                     <Settings className="h-8 w-8 text-accent mx-auto mb-3" />
                     <h3 className="font-semibold mb-2">Admin Panel</h3>

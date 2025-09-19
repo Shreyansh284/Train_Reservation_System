@@ -125,7 +125,7 @@ const CoachDetailsModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
 
             <div className="max-h-[70vh] overflow-y-auto pr-2 space-y-6">
                 {/* Realistic Train Visual Layout */}
-                <div className="bg-gradient-to-b from-gray-100 to-gray-200 p-6 rounded-lg">
+                <div className="bg-card p-6 rounded-lg shadow-sm">
                     <h3 className="font-semibold mb-4 flex items-center gap-2">
                         <Train className="h-5 w-5" />
                         Train Carriage - {train.trainNumber}
@@ -135,18 +135,18 @@ const CoachDetailsModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
                     <div className="relative overflow-x-auto overflow-y-hidden">
                         {/* Railway Tracks */}
                         <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2">
-                            <div className="h-1 bg-gray-800 relative">
+                            <div className="h-1 bg-border relative">
                                 {/* Track ties */}
                                 <div className="absolute inset-0 flex justify-between items-center">
                                     {Array.from({ length: 20 }).map((_, i) => (
-                                        <div key={i} className="w-0.5 h-4 bg-gray-600 -translate-y-1.5"></div>
+                                        <div key={i} className="w-0.5 h-4 bg-muted -translate-y-1.5"></div>
                                     ))}
                                 </div>
                             </div>
-                            <div className="h-1 bg-gray-800 mt-2 relative">
+                            <div className="h-1 bg-border mt-2 relative">
                                 <div className="absolute inset-0 flex justify-between items-center">
                                     {Array.from({ length: 20 }).map((_, i) => (
-                                        <div key={i} className="w-0.5 h-4 bg-gray-600 translate-y-1.5"></div>
+                                        <div key={i} className="w-0.5 h-4 bg-muted translate-y-1.5"></div>
                                     ))}
                                 </div>
                             </div>
@@ -162,12 +162,12 @@ const CoachDetailsModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
                                 </div>
                                 {/* Engine Details */}
                                 <div className="absolute -top-2 -right-1 w-3 h-3 bg-yellow-400 rounded-full"></div>
-                                <div className="absolute top-1 right-1 w-1 h-1 bg-white rounded-full"></div>
-                                <div className="absolute bottom-1 right-1 w-1 h-1 bg-white rounded-full"></div>
+                                <div className="absolute top-1 right-1 w-1 h-1 bg-card rounded-full"></div>
+                                <div className="absolute bottom-1 right-1 w-1 h-1 bg-card rounded-full"></div>
                                 {/* Smoke effect */}
                                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full opacity-60 animate-pulse"></div>
-                                    <div className="w-1 h-1 bg-gray-300 rounded-full opacity-40 animate-pulse delay-100 ml-1 -mt-1"></div>
+                                    <div className="w-2 h-2 bg-muted-foreground rounded-full opacity-60 animate-pulse"></div>
+                                    <div className="w-1 h-1 bg-muted rounded-full opacity-40 animate-pulse delay-100 ml-1 -mt-1"></div>
                                 </div>
                             </div>
 
@@ -205,18 +205,18 @@ const CoachDetailsModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
 
                                             {/* Wheels */}
                                             <div className="absolute -bottom-3 left-3">
-                                                <div className="w-4 h-4 bg-gray-800 rounded-full border-2 border-gray-600">
-                                                    <div className="w-2 h-2 bg-gray-400 rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                                                <div className="w-4 h-4 bg-muted-foreground rounded-full border-2 border-border">
+                                                    <div className="w-2 h-2 bg-muted rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
                                                 </div>
                                             </div>
                                             <div className="absolute -bottom-3 right-3">
-                                                <div className="w-4 h-4 bg-gray-800 rounded-full border-2 border-gray-600">
-                                                    <div className="w-2 h-2 bg-gray-400 rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                                                <div className="w-4 h-4 bg-muted-foreground rounded-full border-2 border-border">
+                                                    <div className="w-2 h-2 bg-muted rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
                                                 </div>
                                             </div>
 
                                             {/* Coach Class Indicator */}
-                                            <div className="absolute top-0 right-0 bg-white bg-opacity-90 text-gray-800 text-xs px-1 rounded-bl font-semibold">
+                                            <div className="absolute top-0 right-0 bg-card/90 text-foreground text-xs px-1 rounded-bl font-semibold">
                                                 {coach.coachClass}
                                             </div>
                                         </div>
@@ -271,18 +271,18 @@ const StationRouteModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
 
             <div className="max-h-[60vh] overflow-y-auto pr-2 space-y-6">
                 {/* Route Overview */}
-                <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                <Card className="bg-secondary">
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Circle className="h-3 w-3 text-green-600 fill-current" />
                                 <span className="font-semibold">{train.sourceStation.stationName}</span>
-                                <span className="text-sm text-gray-600">({train.sourceStation.stationCode})</span>
+                                <span className="text-sm text-muted-foreground">({train.sourceStation.stationCode})</span>
                             </div>
-                            <Navigation className="h-5 w-5 text-gray-400" />
+                            <Navigation className="h-5 w-5 text-muted-foreground" />
                             <div className="flex items-center gap-2">
                                 <span className="font-semibold">{train.destinationStation.stationName}</span>
-                                <span className="text-sm text-gray-600">({train.destinationStation.stationCode})</span>
+                                <span className="text-sm text-muted-foreground">({train.destinationStation.stationCode})</span>
                                 <Circle className="h-3 w-3 text-red-600 fill-current" />
                             </div>
                         </div>
@@ -298,7 +298,7 @@ const StationRouteModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
 
                     <div className="relative">
                         {/* Timeline Line */}
-                        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-300"></div>
+                        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-border"></div>
 
                         {sortedSchedules.map((schedule, index) => (
                             <div key={schedule.scheduleId} className="relative flex items-start gap-4 pb-6">
@@ -314,7 +314,7 @@ const StationRouteModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
                                             <div className="flex justify-between items-start">
                                                 <div>
                                                     <h4 className="font-semibold text-lg">{schedule.station.stationName}</h4>
-                                                    <p className="text-sm text-gray-600">
+                                                    <p className="text-sm text-muted-foreground">
                                                         {schedule.station.stationCode} • {schedule.station.city}, {schedule.station.state}
                                                     </p>
                                                 </div>
@@ -323,13 +323,13 @@ const StationRouteModal: React.FC<{ train: DisplayTrainDTO }> = ({ train }) => {
                                                 </Badge>
                                             </div>
 
-                                            <div className="flex items-center gap-4 text-sm">
+                                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                                 <div className="flex items-center gap-1">
-                                                    <MapPin className="h-4 w-4 text-gray-500" />
+                                                    <MapPin className="h-4 w-4 text-muted-foreground" />
                                                     <span>Platform TBD</span>
                                                 </div>
                                                 <div className="flex items-center gap-1">
-                                                    <Clock className="h-4 w-4 text-gray-500" />
+                                                    <Clock className="h-4 w-4 text-muted-foreground" />
                                                     <span>Time TBD</span>
                                                 </div>
                                             </div>
@@ -417,23 +417,23 @@ const Trains: React.FC = () => {
     };
 
     const getClassVariant = (coachClass: string) => {
+        // Return full, static Tailwind classes for badge background/text to keep JIT happy and be dark-friendly
         switch (coachClass.toLowerCase()) {
             case 'a1':
             case 'first ac':
-                return 'blue-500 ';     // First AC - blue
+                return 'bg-blue-500 text-white';
             case 'a2':
             case 'second ac':
-                return 'green-500';    // Second AC - green
+                return 'bg-green-500 text-white';
             case 'a3':
             case 'third ac':
-                return 'yellow-500';   // Third AC - yellow  // Fourth AC - purple (using as taliwalnd)
+                return 'bg-yellow-500 text-black';
             case 'sl':
             case 'sleeper':
-                return 'orange-500';   // Sleeper - orange
+                return 'bg-orange-500 text-white';
             default:
-                return 'gray-200 ';     // Default - gray
+                return 'bg-gray-500 text-white';
         }
-
     };
 
     const sortedAndFilteredTrains = trains
@@ -502,7 +502,7 @@ const Trains: React.FC = () => {
                         <Train className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{totalTrains}</div>
+                        <div className="text-2xl font-bold text-foreground">{totalTrains}</div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -511,7 +511,7 @@ const Trains: React.FC = () => {
                         <Route className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-blue-600">{totalCoaches}</div>
+                        <div className="text-2xl font-bold text-primary">{totalCoaches}</div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -520,7 +520,7 @@ const Trains: React.FC = () => {
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-600">{totalSeats}</div>
+                        <div className="text-2xl font-bold text-primary">{totalSeats}</div>
                     </CardContent>
                 </Card>
             </div>
@@ -600,22 +600,22 @@ const Trains: React.FC = () => {
                     <Card>
                         <CardContent className="flex items-center justify-center py-12">
                             <div className="text-center">
-                                <Train className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">No trains found</h3>
-                                <p className="text-gray-600">Try adjusting your filters or add a new train.</p>
+                                <Train className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                <h3 className="text-lg font-semibold text-foreground mb-2">No trains found</h3>
+                                <p className="text-muted-foreground">Try adjusting your filters or add a new train.</p>
                             </div>
                         </CardContent>
                     </Card>
                 ) : (
                     sortedAndFilteredTrains.map((train) => (
-                        <Card key={train.trainId} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
+                        <Card key={train.trainId} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-primary">
                             <CardContent className="p-4">
                                 <div className="space-y-3">
                                     {/* Train Header */}
                                     <div className="flex justify-between items-start">
                                         <div className="space-y-0.5">
                                             <div className="flex items-center gap-2">
-                                                <h3 className="text-lg font-bold text-gray-900">
+                                                <h3 className="text-lg font-bold text-foreground">
                                                     {train.trainNumber}
                                                 </h3>
                                                 <div className="flex items-center gap-1">
@@ -624,12 +624,12 @@ const Trains: React.FC = () => {
                                                         onCheckedChange={() => toggleTrainStatus(train.trainId, train.isActive ?? true)}
                                                         className="data-[state=checked]:bg-green-500 scale-75"
                                                     />
-                                                    <span className="text-xs text-gray-600">
+                                                    <span className="text-xs text-muted-foreground">
                                                         {train.isActive ?? true ? 'Active' : 'Inactive'}
                                                     </span>
                                                 </div>
                                             </div>
-                                            <p className="text-base text-gray-700 font-medium">{train.trainName}</p>
+                                            <p className="text-base text-foreground font-medium">{train.trainName}</p>
                                         </div>
                                         <div className="flex items-center gap-1">
                                             {train.isActive ? (
@@ -641,30 +641,30 @@ const Trains: React.FC = () => {
                                     </div>
 
                                     {/* Route Information */}
-                                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3">
+                                    <div className="bg-secondary rounded-lg p-3">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                                                 <div>
-                                                    <p className="font-semibold text-gray-900 text-sm">
+                                                    <p className="font-semibold text-foreground text-sm">
                                                         {train.sourceStation.stationName}
                                                     </p>
-                                                    <p className="text-xs text-gray-600">
+                                                    <p className="text-xs text-muted-foreground">
                                                         {train.sourceStation.stationCode} • {train.sourceStation.city}
                                                     </p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center px-2">
-                                                <div className="flex-1 h-0.5 bg-gray-300 relative w-8">
-                                                    <Train className="h-3 w-3 text-blue-600 absolute -top-1.5 left-1/2 transform -translate-x-1/2" />
+                                                <div className="flex-1 h-0.5 bg-border relative w-8">
+                                                    <Train className="h-3 w-3 text-primary absolute -top-1.5 left-1/2 transform -translate-x-1/2" />
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <div className="text-right">
-                                                    <p className="font-semibold text-gray-900 text-sm">
+                                                    <p className="font-semibold text-foreground text-sm">
                                                         {train.destinationStation.stationName}
                                                     </p>
-                                                    <p className="text-xs text-gray-600">
+                                                    <p className="text-xs text-muted-foreground">
                                                         {train.destinationStation.stationCode} • {train.destinationStation.city}
                                                     </p>
                                                 </div>
@@ -675,29 +675,29 @@ const Trains: React.FC = () => {
 
                                     {/* Quick Stats */}
                                     <div className="grid grid-cols-3 gap-3">
-                                        <div className="text-center bg-gray-50 rounded-lg p-2">
-                                            <div className="text-lg font-bold text-blue-600">
+                                        <div className="text-center bg-muted rounded-lg p-2">
+                                            <div className="text-lg font-bold text-primary">
                                                 {train.coaches.length}
                                             </div>
-                                            <div className="text-xs text-gray-600">Coaches</div>
+                                            <div className="text-xs text-muted-foreground">Coaches</div>
                                         </div>
-                                        <div className="text-center bg-gray-50 rounded-lg p-2">
-                                            <div className="text-lg font-bold text-green-600">
+                                        <div className="text-center bg-muted rounded-lg p-2">
+                                            <div className="text-lg font-bold text-primary">
                                                 {train.coaches.reduce((sum, coach) => sum + coach.totalSeats, 0)}
                                             </div>
-                                            <div className="text-xs text-gray-600">Total Seats</div>
+                                            <div className="text-xs text-muted-foreground">Total Seats</div>
                                         </div>
-                                        <div className="text-center bg-gray-50 rounded-lg p-2">
-                                            <div className="text-lg font-bold text-purple-600">
+                                        <div className="text-center bg-muted rounded-lg p-2">
+                                            <div className="text-lg font-bold text-primary">
                                                 {train.schedules.length}
                                             </div>
-                                            <div className="text-xs text-gray-600">Stations</div>
+                                            <div className="text-xs text-muted-foreground">Stations</div>
                                         </div>
                                     </div>
 
                                     {/* Coach Preview */}
                                     <div className="space-y-1">
-                                        <h4 className="font-semibold text-gray-900 flex items-center gap-1 text-sm">
+                                        <h4 className="font-semibold text-foreground flex items-center gap-1 text-sm">
                                             <Car className="h-3 w-3" />
                                             Coach Classes
                                         </h4>
@@ -707,8 +707,7 @@ const Trains: React.FC = () => {
                                                 return (
                                                     <Badge
                                                         key={coachClass}
-                                                        // variant={getClassVariant(coachClass)}
-                                                        className={`px-2 py-0.5 text-xs bg-${getClassVariant(coachClass)}`}
+                                                        className={`px-2 py-0.5 text-xs ${getClassVariant(coachClass)}`}
                                                     >
                                                         {coachClass} ({count})
                                                     </Badge>

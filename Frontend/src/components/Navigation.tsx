@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Navigation = () => {
   const location = useLocation();
@@ -32,7 +33,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-white border-b border-border shadow-card sticky top-0 z-50">
+    <nav className="bg-background border-b border-border shadow-card sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-4 lg:px-6">
         <div className="flex justify-between items-center h-14">
           <div className="flex items-center space-x-2">
@@ -44,7 +45,7 @@ const Navigation = () => {
             </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
             <Link to="/search">
               <Button
                 variant={isActive("/search") ? "railway" : "ghost"}
@@ -115,6 +116,7 @@ const Navigation = () => {
               </Link>
             )}
 
+            <ThemeToggle />
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

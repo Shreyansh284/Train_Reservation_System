@@ -63,7 +63,7 @@ const PNRStatus = () => {
   const handleSearch = async () => {
     const pnrValue = pnr.trim();
     if (!pnrValue) return;
-    
+
     // Instead of navigating, fetch the data directly
     await fetchBooking(pnrValue);
   };
@@ -128,7 +128,7 @@ const PNRStatus = () => {
 
         {/* Show booking details if available */}
         {booking && (
-          <Card className="shadow-card bg-white">
+          <Card className="shadow-card bg-card text-card-foreground">
             <CardHeader>
               <CardTitle className="text-center">
                 <div className="text-sm text-muted-foreground">PNR Number</div>
@@ -213,9 +213,9 @@ const PNRStatus = () => {
             </CardContent>
           </Card>
         )}
-      
+
+      </div>
     </div>
-  </div>
   );
 };
 

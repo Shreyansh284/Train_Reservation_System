@@ -84,30 +84,30 @@ const Search = () => {
 
     setLoading(true);
     setError(null);
-    
+
     try {
-      const formattedDate = date.getFullYear() + '-' + 
-        String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+      const formattedDate = date.getFullYear() + '-' +
+        String(date.getMonth() + 1).padStart(2, '0') + '-' +
         String(date.getDate()).padStart(2, '0');
-      
+
       // First fetch the trains
       const trains = await searchTrains(fromStationId, toStationId, formattedDate);
-      
+
       // If no trains found, show a toast and stay on the page
       if (!trains || trains.length === 0) {
         // The error toast will be shown by the apiClient interceptor
         return;
       }
-      
+
       // Only navigate if we have results
-      navigate("/search/results", { 
-        state: { 
-          fromStationId, 
-          toStationId, 
-          date: formattedDate, 
-          fromStation, 
-          toStation 
-        } 
+      navigate("/search/results", {
+        state: {
+          fromStationId,
+          toStationId,
+          date: formattedDate,
+          fromStation,
+          toStation
+        }
       });
     } catch (error) {
       // Error toast is handled by the apiClient interceptor
@@ -118,14 +118,14 @@ const Search = () => {
   };
 
   const handleBookTrain = (trainId: number, fromStationId: number, toStationId: number) => {
-    const formattedDate = date ? date.getFullYear() + '-' + 
-      String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+    const formattedDate = date ? date.getFullYear() + '-' +
+      String(date.getMonth() + 1).padStart(2, '0') + '-' +
       String(date.getDate()).padStart(2, '0') : '';
     navigate(`/book/${trainId}?fromStationId=${fromStationId}&toStationId=${toStationId}&dateOfBooking=${formattedDate}`);
   };
 
   const renderSuggestions = (suggestions: any[], setter: Function, setterId: Function) => (
-    <div className="absolute left-0 top-11 bg-white border border-border rounded-md w-full max-h-60 overflow-y-auto shadow-lg z-50 text-sm">
+    <div className="absolute left-0 top-11 bg-popover text-popover-foreground border border-border rounded-md w-full max-h-60 overflow-y-auto shadow-lg z-50 text-sm">
       {suggestions.map((station: any) => (
         <div
           key={station.stationId}
@@ -168,12 +168,12 @@ const Search = () => {
                     autoComplete="off"
                   />
                   {fromLoading && (
-                    <div className="absolute top-full mt-1 w-full bg-white text-sm text-muted-foreground px-4 py-2 border rounded shadow z-50">
+                    <div className="absolute top-full mt-1 w-full bg-popover text-popover-foreground text-sm px-4 py-2 border rounded shadow z-50">
                       <Loading size={16} className="py-1" />
                     </div>
                   )}
                   {fromSuggestions.length > 0 && (
-                    <div className="absolute top-full mt-1 w-full bg-white border rounded-md shadow-lg z-50 max-h-60 overflow-y-auto text-sm">
+                    <div className="absolute top-full mt-1 w-full bg-popover text-popover-foreground border rounded-md shadow-lg z-50 max-h-60 overflow-y-auto text-sm">
                       {fromSuggestions.map((station: any) => (
                         <div
                           key={station.stationId}
@@ -207,12 +207,12 @@ const Search = () => {
                     autoComplete="off"
                   />
                   {toLoading && (
-                    <div className="absolute top-full mt-1 w-full bg-white text-sm text-muted-foreground px-4 py-2 border rounded shadow z-50">
+                    <div className="absolute top-full mt-1 w-full bg-popover text-popover-foreground text-sm px-4 py-2 border rounded shadow z-50">
                       <Loading size={16} className="py-1" />
                     </div>
                   )}
                   {toSuggestions.length > 0 && (
-                    <div className="absolute top-full mt-1 w-full bg-white border rounded-md shadow-lg z-50 max-h-60 overflow-y-auto text-sm">
+                    <div className="absolute top-full mt-1 w-full bg-popover text-popover-foreground border rounded-md shadow-lg z-50 max-h-60 overflow-y-auto text-sm">
                       {toSuggestions.map((station: any) => (
                         <div
                           key={station.stationId}
@@ -246,7 +246,7 @@ const Search = () => {
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
-                    
+
                       mode="single"
                       selected={date}
                       onSelect={setDate}
@@ -275,7 +275,7 @@ const Search = () => {
                   {loading ? (
                     <div className="flex flex-col items-center justify-center my-12 space-y-4">
                       <Loading size={40} />
-                      
+
                     </div>
                   ) : (
                     <>
@@ -287,7 +287,7 @@ const Search = () => {
               </div>
             </div>
           </CardContent>
-        {/* Search Results */}
+          {/* Search Results */}
         </Card>
       </div>
     </div>

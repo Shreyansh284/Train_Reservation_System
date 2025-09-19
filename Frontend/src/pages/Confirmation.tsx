@@ -74,7 +74,7 @@ const Confirmation = () => {
         </Card>
 
         {/* PNR & Quick Actions */}
-        <Card className="mb-6 bg-white shadow-card">
+        <Card className="mb-6 bg-card text-card-foreground shadow-card">
           <CardHeader>
             <CardTitle className="text-center">
               <div className="text-sm text-muted-foreground">PNR Number</div>
@@ -108,7 +108,7 @@ const Confirmation = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Train Details */}
-          <Card className="bg-white shadow-card">
+          <Card className="bg-card text-card-foreground shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Train className="h-5 w-5 text-primary" />
@@ -161,7 +161,7 @@ const Confirmation = () => {
           </Card>
 
           {/* Passenger Details */}
-          <Card className="bg-white shadow-card">
+          <Card className="bg-card text-card-foreground shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-primary" />
@@ -225,7 +225,7 @@ const Confirmation = () => {
         </Card>
 
         {/* Important Notes */}
-        <Card className="mt-6 bg-white shadow-card">
+        <Card className="mt-6 bg-card text-card-foreground shadow-card">
           <CardHeader>
             <CardTitle className="text-lg">Important Information</CardTitle>
           </CardHeader>

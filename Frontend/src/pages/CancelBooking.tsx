@@ -172,7 +172,7 @@ const CancelBooking = () => {
         {searchResults && (
           <div className="space-y-6">
             {/* Train Information */}
-            <Card className="bg-white shadow-card">
+            <Card className="bg-card text-card-foreground shadow-card">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -233,7 +233,7 @@ const CancelBooking = () => {
                   {searchResults.passengers.map((passenger: any) => (
                     <div key={passenger.passengerId} className="col-span-12 md:col-span-6">
                       <div
-                        className={`flex items-center space-x-3 p-4 border-2 rounded-xl bg-white/90 shadow-sm
+                        className={`flex items-center space-x-3 p-4 border-2 rounded-xl bg-card/90 shadow-sm
                           ${selectedPassengers.includes(passenger.passengerId)
                             ? "border-primary/60 ring-2 ring-primary/20"
                             : "border-muted/30"}

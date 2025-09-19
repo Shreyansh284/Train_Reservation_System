@@ -257,7 +257,7 @@ const BookTrain = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Coach Selection */}
-          <Card className="bg-white shadow-card">
+          <Card className="bg-card text-card-foreground shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Armchair className="h-5 w-5 text-primary" />
@@ -296,7 +296,7 @@ const BookTrain = () => {
           </Card>
 
           {/* Passenger Details */}
-          <Card className="bg-white shadow-card">
+          <Card className="bg-card text-card-foreground shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
