@@ -7,9 +7,9 @@ namespace Infrastructure.Repositories;
 
 public class PassengerRepository(AppDbContext context):IPassengerRepository
 {
-    public async Task AddPassenger(Passenger passenger)
+    public async Task AddPassengers(List<Passenger> passengers)
     {
-        await context.Passengers.AddAsync(passenger);
+        await context.Passengers.AddRangeAsync(passengers);
     }
 
     public async Task<Passenger?> GetPassengerById(int id)

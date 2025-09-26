@@ -118,13 +118,28 @@ public class BookingCancellationCommandHandler(IBookingRepository bookingReposit
         List<TrainSchedule> trainScheduleStations)
     {
         var waitFromStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.FromStationId);
-        var waitToStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.ToStationId);
+        if (waitFromStation == null)
+        {
+            throw new NotFoundException($"Station with ID {wait.FromStationId} not found in train schedule.");
+        }
 
+        var waitToStation = trainScheduleStations.FirstOrDefault(s => s.StationId == wait.ToStationId);
+        if(waitToStation == null)
+        {
+            throw new NotFoundException($"Station with ID {wait.ToStationId} not found in train schedule.");
+        }
         foreach (var confirmed in confirmedOnSeat)
         {
             var confFrom = trainScheduleStations.FirstOrDefault(s => s.StationId == confirmed.Booking.FromStationId);
+            if(confFrom == null)
+            {
+                throw new NotFoundException($"Station with ID {confirmed.Booking.FromStationId} not found in train schedule.");
+            }
             var confTo = trainScheduleStations.FirstOrDefault(s => s.StationId == confirmed.Booking.ToStationId);
-
+            if(confTo == null)
+            {
+                throw new NotFoundException($"Station with ID {confirmed.Booking.ToStationId} not found in train schedule.");
+            }
             if (IsOverlapping(
                     waitFromStation.DistanceFromSource,
                     waitToStation.DistanceFromSource,

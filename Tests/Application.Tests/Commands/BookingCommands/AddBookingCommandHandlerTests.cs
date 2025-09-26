@@ -45,7 +45,7 @@ namespace Application.Tests.Commands.BookingCommands
         {
             // Arrange
             _trainRepo.Setup(r => r.GetTrainByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync((Train)null);
+                .ReturnsAsync((Train?)null);
 
             var command = new AddBookingCommand(1, 1, new BookingRequestDTO());
 
@@ -107,7 +107,7 @@ namespace Application.Tests.Commands.BookingCommands
             // Assert
             Assert.NotNull(result);
             _bookingRepo.Verify(r => r.AddBooking(It.IsAny<Booking>()), Times.Once);
-            _passengerRepo.Verify(r => r.AddPassenger(It.IsAny<Passenger>()), Times.AtLeastOnce);
+            _passengerRepo.Verify(r => r.AddPassengers(It.IsAny<List<Passenger>>()), Times.AtLeastOnce);
             _unitOfWork.Verify(r => r.SaveChangesAsync(), Times.AtLeastOnce);
             _emailService.Verify(e => e.SendBookingConfirmationAsync(It.IsAny<PassengerBookingInfoDTO>(), booking), Times.Once);
         }
@@ -130,7 +130,7 @@ namespace Application.Tests.Commands.BookingCommands
             };
 
             _bookingRepo.Setup(r => r.GetBookingWithDetailsByPNR(It.IsAny<long>()))
-                        .ReturnsAsync((Booking)null);
+                        .ReturnsAsync((Booking?)null);
 
             var command = new AddBookingCommand(1, 1, request);
             var handler = CreateHandler();
@@ -138,6 +138,6 @@ namespace Application.Tests.Commands.BookingCommands
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() =>
                 handler.Handle(command, CancellationToken.None));
-        }
+        }       
     }
 }

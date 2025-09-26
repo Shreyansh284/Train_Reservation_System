@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using System.Collections.Concurrent;
+using Application.Common.Interfaces;
 using Application.DTOs.BookingDTOs;
 using Application.Exceptions;
 using AutoMapper;
@@ -20,11 +21,16 @@ public class AddBookingCommandHandler(
     IMapper mapper,
     IUnitOfWork unitOfWork) : IRequestHandler<AddBookingCommand, PassengerBookingInfoDTO>
 {
-    private static readonly SemaphoreSlim _bookingLock = new(1, 1);
+    private static readonly ConcurrentDictionary<int, SemaphoreSlim> _trainLocks = new();
+    private SemaphoreSlim GetTrainLock(int trainId)
+    {
+        return _trainLocks.GetOrAdd(trainId, _ => new SemaphoreSlim(1, 1));
+    }
 
     public async Task<PassengerBookingInfoDTO> Handle(AddBookingCommand request, CancellationToken cancellationToken)
     {
-        await _bookingLock.WaitAsync(cancellationToken);
+        var trainLock = GetTrainLock(request.TrainId);
+        await trainLock.WaitAsync(cancellationToken);
         try
         {
             var bookingDetails = request.BookingRequest;
@@ -57,17 +63,24 @@ public class AddBookingCommandHandler(
         }
         finally
         {
-            _bookingLock.Release();
+            trainLock.Release();
         }
     }
     private async Task<List<Seat>> GetAvailableSeats(Train train, BookingRequestDTO bookingRequestDto)
     {
+        if (!Enum.TryParse<CoachClass>(bookingRequestDto.CoachClass, true, out var parsedClass))
+            throw new ArgumentException($"Invalid coach class: {bookingRequestDto.CoachClass}");
+
         var availableSeats = new List<Seat>();
 
-        foreach (var coach in train.Coaches.Where(c => c.CoachClass.ToString() == bookingRequestDto.CoachClass))
+        foreach (var coach in train.Coaches.Where(c => c.CoachClass == parsedClass))
         {
             var coachSeats = await seatRepository.GetAvailableSeatsAsync(
-                coach.CoachId, bookingRequestDto.JourneyDate, bookingRequestDto.FromStationId, bookingRequestDto.ToStationId);
+                coach.CoachId,
+                bookingRequestDto.JourneyDate,
+                bookingRequestDto.FromStationId,
+                bookingRequestDto.ToStationId);
+
             availableSeats.AddRange(coachSeats);
         }
 
@@ -94,6 +107,7 @@ public class AddBookingCommandHandler(
 
     private async Task AddPassengersAsync(Booking booking, BookingRequestDTO bookingRequestDto, List<Seat> seats, int confirmedPassengerCount)
     {
+        var passengers = new List<Passenger>();
         for (int i = 0; i < bookingRequestDto.Passengers.Count; i++)
         {
             var passengerInfo = bookingRequestDto.Passengers[i];
@@ -110,15 +124,15 @@ public class AddBookingCommandHandler(
             {
                 passenger.SeatId = i < seats.Count ? seats[i].SeatId : null;
                 passenger.Status = BookingStatus.Confirmed;
-                // passenger.CoachClass=seats[i].Coach.CoachClass;
             }
             else
             {
                 passenger.Status = BookingStatus.Waiting;
-            }
 
-            await passengerRepository.AddPassenger(passenger);
+            }
+            passengers.Add(passenger);
         }
+        await passengerRepository.AddPassengers(passengers);
 
         await unitOfWork.SaveChangesAsync();
     }
